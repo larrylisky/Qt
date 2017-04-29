@@ -6,6 +6,7 @@
 #include <string>
 #include <QMenu>
 #include <QMainWindow>
+#include <QPushButton>
 
 #include "CameraSystem.h"
 #include "opencv2/opencv.hpp"
@@ -31,13 +32,16 @@ public slots:
 
     void slotConnectCamera(QAction *action);
     void slotDisconnectCamera(QAction *action);
+    void slotAboutToShowCamera();
     void slotExit();
 
 
 protected:
-    uint scanCameras();
-    void initMenu();
-    void initSignalSlot();
+    void _updateCameraMenu();
+    void _setupMenu();
+    void _setupSignalSlot();
+    void _addMainToolBarButton(QString name);
+    uint _numConnectedCameras();
 
 private:
     Ui::MainWindow *_ui;
@@ -45,7 +49,10 @@ private:
     QMenu *_disconnectSubmenu;
 
     Voxel::CameraSystem _sys;
+    std::vector< DevicePtr > _device;
     std::map< QString, Grabber* > _attachedCamera;
+    std::map< QString, QPushButton* > _cameraSelectButton;
+    std::map< QString, QAction* > _cameraSelectButtonAction;
 };
 
 #endif // MAINWINDOW_H

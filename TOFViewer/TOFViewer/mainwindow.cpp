@@ -13,40 +13,126 @@ MainWindow::MainWindow(QWidget *parent) :
     _ui(new Ui::MainWindow)
 {
     _ui->setupUi(this);
-
-    scanCameras();
-
-    initMenu();
-
-    initSignalSlot();
+    _setupMenu();
+    _setupSignalSlot();
 }
 
 
-void MainWindow::initMenu()
+uint MainWindow::_numConnectedCameras()
 {
+    uint count = 0;
     map< QString, Grabber* >::iterator it;
-
-    _connectSubmenu = _ui->menuFile->addMenu("Connect Camera");
-    connect(_connectSubmenu, SIGNAL(triggered(QAction*)), this, SLOT(slotConnectCamera(QAction *)));
-
-    _disconnectSubmenu = _ui->menuFile->addMenu("Disconnect Camera");
-    connect(_disconnectSubmenu, SIGNAL(triggered(QAction*)), this, SLOT(slotDisconnectCamera(QAction *)));
-
     for (auto const&it : _attachedCamera)
     {
-        if (it.second == NULL)
-            _connectSubmenu->addAction(it.first);
-        else
-            _disconnectSubmenu->addAction(it.first);
+        if (it.second != NULL)
+            count++;
+    }
+    return count;
+}
+
+void MainWindow::_updateCameraMenu()
+{
+    map< QString, Grabber* > plugged;    // Attached but not connected
+    map< QString, Grabber* > connected;  // Attached and connected
+    map< QString, Grabber* > unplugged;  // Unattached
+
+    _device = _sys.scan();
+
+    // Get plugged set find connected
+    for (uint i = 0; i < _device.size(); i++)
+    {
+        QString name = QString(_device[i]->serialNumber().c_str());
+        plugged[name] = NULL;
+        if (_attachedCamera.find(name) != _attachedCamera.end())
+        {
+            plugged[name] = connected[name] = _attachedCamera[name];
+        }
     }
 
+    // From unplugged set
+    map< QString, Grabber* >::iterator itCamera;
+    for (auto const&itCamera : connected)
+    {
+        QString name = itCamera.first;
+        if ( _attachedCamera.find(name) == _attachedCamera.end() )
+            unplugged[name] = _attachedCamera[name];
+    }
+
+    _attachedCamera = plugged;
+
+
+    // Remove MainToolBar buttons and actions
+    map< QString, QPushButton* >::iterator itButton;
+    for (auto const&itButton :_cameraSelectButton)
+        delete itButton.second;
+    _cameraSelectButton.clear();
+
+    map< QString, QAction* >::iterator itAction;
+    for (auto const&itAction : _cameraSelectButtonAction)
+        _ui->mainToolBar->removeAction(itAction.second);
+    _cameraSelectButtonAction.clear();
+
+    // Clear connected and disconnected camera lists
+    QList<QAction *> list = _disconnectSubmenu->actions();
+    while (!list.isEmpty())
+    {
+        QAction *action = list.front();
+        _disconnectSubmenu->removeAction(action);
+        list.pop_front();
+        delete action;
+    }
+
+    list = _connectSubmenu->actions();
+    while (!list.isEmpty())
+    {
+        QAction *action = list.front();
+        _connectSubmenu->removeAction(action);
+        list.pop_front();
+        delete action;
+    }
+
+    // Add back the updated cameras to each list
+    for (auto const&itCamera : _attachedCamera)
+    {
+        QString name = itCamera.first;
+        if (itCamera.second == NULL)
+        {
+            _connectSubmenu->addAction(name);
+        }
+        else
+        {
+            QPushButton *button = new QPushButton(name);
+            _cameraSelectButton[name] = button;
+            _cameraSelectButtonAction[name] = _ui->mainToolBar->addWidget(button);
+            _disconnectSubmenu->addAction(name);
+        }
+    }
+}
+
+
+
+void MainWindow::_setupMenu()
+{
+    _connectSubmenu = _ui->menuFile->addMenu("Connect Camera");
+    _connectSubmenu->setIcon(QIcon(QPixmap(":/res/images/connectButton.png")));
+    _disconnectSubmenu = _ui->menuFile->addMenu("Disconnect Camera");
+    _disconnectSubmenu->setIcon(QIcon(QPixmap(":/res/images/disconnectButton.png")));
+
+    _updateCameraMenu();
+
+    connect(_connectSubmenu, SIGNAL(aboutToShow()), this, SLOT(slotAboutToShowCamera()));
+    connect(_connectSubmenu, SIGNAL(triggered(QAction*)), this, SLOT(slotConnectCamera(QAction *)));
+    connect(_disconnectSubmenu, SIGNAL(aboutToShow()), this, SLOT(slotAboutToShowCamera()));
+    connect(_disconnectSubmenu, SIGNAL(triggered(QAction*)), this, SLOT(slotDisconnectCamera(QAction *)));
+
     QAction *exitAction = _ui->menuFile->addAction("&Exit");
+    exitAction->setIcon(QIcon(QPixmap(":/res/images/exitButton.png")));
     connect(exitAction, SIGNAL(triggered()), this, SLOT(slotExit()));
 }
 
 
 
-void MainWindow::initSignalSlot()
+void MainWindow::_setupSignalSlot()
 {
     // Connect sliders
     connect(_ui->unambDistSlider, SIGNAL(valueChanged(int)), this, SLOT(slotUpdateUnambDist(int)));
@@ -56,75 +142,68 @@ void MainWindow::initSignalSlot()
 }
 
 
-uint MainWindow::scanCameras()
-{
-    std::vector<DevicePtr> device = _sys.scan();
-
-    for (uint i = 0; i < device.size(); i++)
-    {
-        DepthCameraPtr dc = _sys.connect(device[i]);
-        if (dc)
-        {
-            std::string serial;
-            if (dc->getSerialNumber(serial))
-                if (_attachedCamera[QString(serial.c_str())] != NULL )
-                    continue;
-        }
-        _sys.disconnect(dc);
-    }
-    return _attachedCamera.size();
-}
-
-
 MainWindow::~MainWindow()
 {
     delete _ui;
 }
 
 
+void MainWindow::slotAboutToShowCamera()
+{
+    _updateCameraMenu();
+}
+
+
 void MainWindow::slotConnectCamera(QAction *action)
 {
-    std::vector<DevicePtr> device = _sys.scan();
-
-    for (uint i = 0; i < device.size(); i++)
+    for (uint i = 0; i < _device.size(); i++)
     {
-        DepthCameraPtr dc = _sys.connect(device[i]);
-        if (dc)
+        QString name = QString(_device[i]->serialNumber().c_str());
+
+        if (name == action->text())
         {
-            std::string serial;
-            Grabber *grabber = new Grabber(dc, DepthCamera::FRAME_DEPTH_FRAME, _sys);
-            if (grabber->getSerialNumber(serial))
+            if (_attachedCamera[name] == NULL) // look for unconnected cameras only
             {
-                QString name = QString(serial.c_str());
-                if (name == action->text())
+                DepthCameraPtr dc = _sys.connect(_device[i]);
+                if (dc)
                 {
+                    Grabber *grabber = new Grabber(dc, DepthCamera::FRAME_DEPTH_FRAME, _sys);
                     _attachedCamera[name] = grabber;
-                    _disconnectSubmenu->addAction(action->text());
-                    _connectSubmenu->removeAction(action);
                     std::cout << "Connected to " << name.toStdString() << std::endl;
-                    return;
+                    goto ret;
                 }
             }
         }
-        _sys.disconnect(dc);
     }
+ret:
+    _updateCameraMenu();
 }
 
 
 void MainWindow::slotDisconnectCamera(QAction *action)
 {
-    Grabber *grabber = _attachedCamera[action->text()];
-    if (grabber)
+    map< DevicePtr, Grabber* >::iterator it;
+    for (auto const&it : _attachedCamera)
     {
-        _disconnectSubmenu->removeAction(action);
-        _sys.disconnect(grabber->getDepthCamera());
-        _attachedCamera[action->text()] = NULL;
-        _connectSubmenu->addAction(action->text());
-        _disconnectSubmenu->removeAction(action);
-        delete grabber;
-        std::cout << "Disconnected from " << action->text().toStdString() << std::endl;
+        if (it.second != NULL) // look for connected cameras only
+        {
+            QString name = it.first;
+            if (name == action->text())
+            {
+                Grabber *grabber = it.second;
+                _sys.disconnect(grabber->getDepthCamera());
+                delete grabber;
+                _attachedCamera[name] = NULL;
+
+                std::cout << "Disconnected from " << action->text().toStdString() << std::endl;
+                goto ret;
+            }
+        }
     }
+ret:
+    _updateCameraMenu();
 }
+
 
 
 void MainWindow::slotExit()

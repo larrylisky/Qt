@@ -36,3 +36,6 @@ QMAKE_CXXFLAGS  += -pthread -std=c++11 -fPIC -ffast-math -fpermissive
 LIBS            += $$OPENCV_LIBS $$VOXEL_LIBS $$PCL_LIBS
 
 FORMS           += mainwindow.ui
+
+RESOURCES += \
+    resources.qrc

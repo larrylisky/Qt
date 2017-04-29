@@ -92,7 +92,7 @@ public:
     
     virtual void registerUpdate(std::function<void(Grabber *g)> update);
     
-    virtual void updateExit() { stop(); _updateDone = true; }
+    virtual void updateExit() { if (isRunning()) stop(); _updateDone = true; }
     
     virtual void run();
     
