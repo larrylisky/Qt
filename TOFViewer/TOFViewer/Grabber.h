@@ -22,6 +22,19 @@ using namespace Voxel;
 
 class Grabber
 {
+public:
+
+    typedef enum {
+        FRAMEFLAG_RAW_UNPROCESSED = (1<<DepthCamera::FRAME_RAW_FRAME_UNPROCESSED),
+        FRAMEFLAG_RAW_PROCESSED = (1<<DepthCamera::FRAME_RAW_FRAME_PROCESSED),
+        FRAMEFLAG_DEPTH_FRAME = (1<<DepthCamera::FRAME_DEPTH_FRAME),
+        FRAMEFLAG_XYZI_POINT_CLOUD_FRAME = (1<<DepthCamera::FRAME_XYZI_POINT_CLOUD_FRAME),
+        FRAMEFLAG_ALL = (FRAMEFLAG_RAW_UNPROCESSED
+                        | FRAMEFLAG_RAW_PROCESSED
+                        | FRAMEFLAG_DEPTH_FRAME
+                        | FRAMEFLAG_XYZI_POINT_CLOUD_FRAME)
+    } FrameFlag;
+
 protected:
     DepthCameraPtr _depthCamera;
     
@@ -29,9 +42,12 @@ protected:
 
     Mutex _mtx;
     
-    deque<Frame *> _qFrame;
+    deque<DepthFrame* > _qDepthFrame;
+    deque<XYZIPointCloudFrame* > _qXYZIFrame;
+    deque<ToFRawFrameTemplate<uint16_t,uint8_t> * > _qProcessedFrame;
+    deque<ToFRawFrameTemplate<uint16_t,uint8_t> * > _qUnprocessedFrame;
     
-    DepthCamera::FrameType _frameType;
+    FrameFlag _frameFlag;
 
     uint32_t _frameCount;  
     
@@ -47,8 +63,7 @@ protected:
     void _applyFilter();
 
 public:
-    Grabber(DepthCameraPtr depthCamera, DepthCamera::FrameType frameType, 
-            CameraSystem &sys);
+    Grabber(DepthCameraPtr depthCamera, FrameFlag flag, CameraSystem &sys);
 
     virtual float getFramesPerSecond() const
     {
@@ -70,11 +85,17 @@ public:
     virtual void stop() { _depthCamera->stop(); _depthCamera->wait(); }
 
     virtual uint32_t getFrameCount();
+
+    virtual FrameFlag getFrameFlag() { return _frameFlag; }
     
-    virtual bool getXYZIFrame(XYZIPointCloudFrame *f);
+    virtual XYZIPointCloudFrame * getXYZIFrame();
     
-    virtual bool getDepthFrame(DepthFrame *f);
-    
+    virtual DepthFrame * getDepthFrame();
+
+    virtual ToFRawFrameTemplate<uint16_t,uint8_t> * getRawFrameProcessed();
+
+    virtual ToFRawFrameTemplate<uint16_t,uint8_t> * getRawFrameUnprocessed();
+
     virtual void setFrameRate(float frameRate);
     
     virtual void getFrameSize(int &rows, int &cols) { rows=_rows; cols=_cols; }
@@ -87,15 +108,13 @@ public:
     
     virtual bool setRegister(Voxel::String name, uint value)
                     { return _depthCamera->set(name, value); }
-                    
-    virtual bool isEmpty();    
-    
+                        
     virtual void registerUpdate(std::function<void(Grabber *g)> update);
     
     virtual void updateExit() { if (isRunning()) stop(); _updateDone = true; }
     
     virtual void run();
-    
+
     virtual ~Grabber()
     {
         if(isRunning())

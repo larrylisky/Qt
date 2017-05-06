@@ -8,9 +8,8 @@
 
 #define FIFO_SIZE       3
 
-Grabber::Grabber(DepthCameraPtr depthCamera, DepthCamera::FrameType frameType,
-                CameraSystem &sys) : 
-        _depthCamera(depthCamera), _frameType(frameType), _sys(sys)
+Grabber::Grabber(DepthCameraPtr depthCamera, FrameFlag frameFlag, CameraSystem &sys) :
+        _depthCamera(depthCamera), _frameFlag(frameFlag), _sys(sys)
 {  
     if (!_depthCamera->isInitialized())
     {
@@ -30,9 +29,36 @@ Grabber::Grabber(DepthCameraPtr depthCamera, DepthCamera::FrameType frameType,
     
     _applyFilter();
 
-    _depthCamera->registerCallback(_frameType, std::bind(&Grabber::_callback,
-                    this, std::placeholders::_1, std::placeholders::_2, 
-                    std::placeholders::_3));
+    setFrameRate(30.0);
+
+#if 0
+    if (_frameFlag & FRAMEFLAG_XYZI_POINT_CLOUD_FRAME)
+        _depthCamera->registerCallback(DepthCamera::FRAME_XYZI_POINT_CLOUD_FRAME,
+            std::bind(&Grabber::_callback, this,
+            std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+#endif
+
+#if 0
+    if (_frameFlag & FRAMEFLAG_DEPTH_FRAME)
+        _depthCamera->registerCallback(DepthCamera::FRAME_DEPTH_FRAME,
+            std::bind(&Grabber::_callback, this,
+            std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+#endif
+
+#if 1
+    if (_frameFlag & FRAMEFLAG_RAW_PROCESSED)
+        _depthCamera->registerCallback(DepthCamera::FRAME_RAW_FRAME_PROCESSED,
+            std::bind(&Grabber::_callback, this,
+            std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+#endif
+
+#if 0
+    if (_frameFlag & FRAMEFLAG_RAW_UNPROCESSED)
+        _depthCamera->registerCallback(DepthCamera::FRAME_RAW_FRAME_UNPROCESSED,
+            std::bind(&Grabber::_callback, this,
+            std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+#endif
+
 }
 
 
@@ -45,39 +71,67 @@ uint32_t Grabber::getFrameCount()
 }
 
 
-bool Grabber::getDepthFrame(DepthFrame *frame)
+DepthFrame * Grabber::getDepthFrame()
 {
-    bool rc = false;
-        
+    DepthFrame *frame = NULL;
+
     Lock<Mutex> _(_mtx);
  
-    if (_qFrame.size() > 0 &&
-        _frameType == DepthCamera::FRAME_DEPTH_FRAME)
+    if (_qDepthFrame.size() > 0 && (_frameFlag & Grabber::FRAMEFLAG_DEPTH_FRAME) )
     {
-        Frame *f = _qFrame.front();
-	    *frame = *(dynamic_cast<DepthFrame *>(f));
-	    rc = true;
-	}
-	
-    return rc;
+        frame = _qDepthFrame.front();
+        _qDepthFrame.pop_front();
+    }
+
+    return frame;
 }
 
 
-bool Grabber::getXYZIFrame(XYZIPointCloudFrame *frame)
-{   
-    bool rc = false;
-    
+XYZIPointCloudFrame * Grabber::getXYZIFrame()
+{
+    XYZIPointCloudFrame *frame = NULL;
+
     Lock<Mutex> _(_mtx);
  
-    if (_qFrame.size() > 0 && 
-        _frameType == DepthCamera::FRAME_XYZI_POINT_CLOUD_FRAME)
+    if (_qXYZIFrame.size() > 0 && (_frameFlag & FRAMEFLAG_XYZI_POINT_CLOUD_FRAME) )
     {
-        Frame *f = _qFrame.front();
-	    *frame = *(dynamic_cast<XYZIPointCloudFrame *>(f));
-	    rc = true;
+        frame = _qXYZIFrame.front();
+        _qXYZIFrame.pop_front();
 	}
-	
-    return rc;
+
+    return frame;
+}
+
+
+ToFRawFrameTemplate<uint16_t,uint8_t> * Grabber::getRawFrameProcessed()
+{
+    ToFRawFrameTemplate<uint16_t,uint8_t> *frame = NULL;
+
+    Lock<Mutex> _(_mtx);
+
+    if (_qProcessedFrame.size() > 0 && (_frameFlag & FRAMEFLAG_RAW_PROCESSED) )
+    {
+        frame = _qProcessedFrame.front();
+        _qProcessedFrame.pop_front();
+    }
+
+    return frame;
+}
+
+
+ToFRawFrameTemplate<uint16_t,uint8_t> * Grabber::getRawFrameUnprocessed()
+{
+    ToFRawFrameTemplate<uint16_t,uint8_t> *frame = NULL;
+
+    Lock<Mutex> _(_mtx);
+
+    if (_qUnprocessedFrame.size() > 0 && (_frameFlag & FRAMEFLAG_RAW_UNPROCESSED) )
+    {
+        frame = _qUnprocessedFrame.front();
+        _qUnprocessedFrame.pop_front();
+    }
+
+    return frame;
 }
 
 
@@ -92,14 +146,6 @@ void Grabber::setFrameRate(float frameRate)
     r.denominator /= g;
     
     _depthCamera->setFrameRate(r);
-}
-
-
-bool Grabber::isEmpty()
-{
-    Lock<Mutex> _(_mtx);
-    
-    return (_qFrame.empty());
 }
 
 
@@ -181,39 +227,71 @@ void Grabber::_applyFilter()
 void Grabber::_callback(DepthCamera &depthCamera, const Frame &frame, 
 				DepthCamera::FrameType type)
 {
-    Frame *nf;
-
     Lock<Mutex> _(_mtx);
-    
+
     if (type == DepthCamera::FRAME_DEPTH_FRAME)
-    {
-        if (_qFrame.size() >= FIFO_SIZE) 
+    {               
+        if (_qDepthFrame.size() >= FIFO_SIZE)
         {
-            nf = _qFrame.front();
-            _qFrame.pop_front();
-            delete dynamic_cast<const DepthFrame *>(nf);
+           DepthFrame *f = _qDepthFrame.front();
+           _qDepthFrame.pop_front();
+           if (f != NULL)
+               delete f;
         }
-        
-        const DepthFrame *f = dynamic_cast<const DepthFrame *>(&frame);
-        nf = dynamic_cast<Frame *>(new DepthFrame(*f));
-        _qFrame.push_back(nf);
-        
+
+        DepthFrame *nf = new DepthFrame;
+        *nf = *dynamic_cast<const DepthFrame *>(&frame);
+        _qDepthFrame.push_back(nf);
+
         _frameCount++;
     }
     else if(type == DepthCamera::FRAME_XYZI_POINT_CLOUD_FRAME)
     {
-    	if (_qFrame.size() >= FIFO_SIZE) 
-    	{
-    	    nf = _qFrame.front();
-    	    _qFrame.pop_front();
-            delete dynamic_cast<const XYZIPointCloudFrame *>(nf);
+        if (_qXYZIFrame.size() >= FIFO_SIZE)
+        {
+            XYZIPointCloudFrame *f = _qXYZIFrame.front();
+            _qXYZIFrame.pop_front();
+            if (f != NULL)
+                delete f;
         }
-            
-        const XYZIPointCloudFrame *f 
-	            = dynamic_cast<const XYZIPointCloudFrame *>(&frame);
-        nf = dynamic_cast<Frame *>(new XYZIPointCloudFrame(*f));
-        _qFrame.push_back(nf);
-        
+
+        XYZIPointCloudFrame *nf = new XYZIPointCloudFrame;
+        *nf = *dynamic_cast<const XYZIPointCloudFrame *>(&frame);
+        _qXYZIFrame.push_back(nf);
+
+        _frameCount++;
+    }
+    else if(type == DepthCamera::FRAME_RAW_FRAME_UNPROCESSED)
+    {
+        if (_qUnprocessedFrame.size() >= FIFO_SIZE)
+        {
+            RawFrame *f = _qUnprocessedFrame.front();
+            _qUnprocessedFrame.pop_front();
+            if (f != NULL)
+                delete f;
+        }
+
+        ToFRawFrameTemplate<uint16_t,uint8_t> *nf = new ToFRawFrameTemplate<uint16_t,uint8_t>();
+        *nf = *dynamic_cast<const ToFRawFrameTemplate<uint16_t,uint8_t> *>(&frame);
+        _qUnprocessedFrame.push_back(nf);
+
+        _frameCount++;
+    }
+    else if (type == DepthCamera::FRAME_RAW_FRAME_PROCESSED)
+    {
+        if (_qProcessedFrame.size() >= FIFO_SIZE)
+        {
+            RawFrame *f = _qProcessedFrame.front();
+            _qProcessedFrame.pop_front();
+            if (f != NULL)
+                delete f;
+        }
+
+
+        ToFRawFrameTemplate<uint16_t,uint8_t> *nf = new ToFRawFrameTemplate<uint16_t,uint8_t>();
+        *nf = *dynamic_cast<const ToFRawFrameTemplate<uint16_t,uint8_t> *>(&frame);
+        _qProcessedFrame.push_back(nf);
+
         _frameCount++;
     }
     else 

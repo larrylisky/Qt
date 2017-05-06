@@ -26,7 +26,11 @@ INCLUDEPATH     += . $$VOXEL_INC $$OPENCV_INC $$PCL_INC
 
 SOURCES         += main.cpp\
                     mainwindow.cpp \
-    Grabber.cpp
+    Grabber.cpp \
+    mainwindowslots.cpp \
+    timerslots.cpp \
+    grabberCallback.cpp \
+    imageFuncs.cpp
 
 HEADERS         += mainwindow.h \
     Grabber.h

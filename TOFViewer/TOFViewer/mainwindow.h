@@ -7,6 +7,8 @@
 #include <QMenu>
 #include <QMainWindow>
 #include <QPushButton>
+#include <QTimer>
+#include <QMutex>
 
 #include "CameraSystem.h"
 #include "opencv2/opencv.hpp"
@@ -24,6 +26,16 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    bool RawFrameToMat(ToFRawFrame *frame, int rows, int cols,
+                        cv::Mat &phase, cv::Mat &amplitude);
+
+    bool DepthFrameToMat(DepthFrame *frame, int rows, int cols,
+                        cv::Mat &depth, cv::Mat &amplitude);
+
+    bool MatToQImage(cv::Mat &mat, QImage &image);
+
+    bool MatToQPixmap(cv::Mat &mat, QPixmap &pixMap );
+
 public slots:
     void slotUpdateUnambDist(int value);
     void slotUpdateFrameRate(int value);
@@ -35,13 +47,19 @@ public slots:
     void slotAboutToShowCamera();
     void slotExit();
 
+    void slotMainToolBar(QAction *);
+
+    void slotTimeout();
+    void slotVideoTimeout();
+
 
 protected:
     void _updateCameraMenu();
     void _setupMenu();
-    void _setupSignalSlot();
+    void _setupTimer(int msec);
     void _addMainToolBarButton(QString name);
     uint _numConnectedCameras();
+    void grabberCallback(Grabber *grabber);
 
 private:
     Ui::MainWindow *_ui;
@@ -53,6 +71,10 @@ private:
     std::map< QString, Grabber* > _attachedCamera;
     std::map< QString, QPushButton* > _cameraSelectButton;
     std::map< QString, QAction* > _cameraSelectButtonAction;
+
+    QTimer *_timer;
+    QTimer *_videoTimer;
+    QMutex _mtxTimer;
 };
 
 #endif // MAINWINDOW_H
