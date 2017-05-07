@@ -70,33 +70,6 @@ bool MainWindow::MatToQImage(cv::Mat &mat, QImage &image)
             }
         }
         image = im;
-        std::cout << "CV_32FC1" << std::endl;
-
-        ret = true;
-        break;
-    }
-    case CV_32FC3:
-    {
-        cv::Mat img = mat;
-
-        QImage im(img.cols, img.rows, QImage::Format_RGB888);
-
-        for (int i = 0; i < img.cols; i++)
-        {
-            for (int j = 0; j < img.rows; j++)
-            {
-                cv::Vec3f pix = img.at<cv::Vec3f>(j, i);
-                QRgb pixel = qRgb((int)(pix[0]*255), (int)(pix[1]*255), (int)(pix[2]*255));
-                im.setPixel(i, j, pixel);
-                std::cout << "pix0=" << (int)(pix[0]*255)
-                          << " pix1=" << (int)(pix[1]*255)
-                          << " pix[2]=" << (int)(pix[2]*255)
-                          << std::endl;
-            }
-        }
-        image = im;
-        std::cout << "CV_32FC3" << std::endl;
-
         ret = true;
         break;
     }
@@ -107,7 +80,6 @@ bool MainWindow::MatToQImage(cv::Mat &mat, QImage &image)
             static_cast<int>(mat.step),
             QImage::Format_ARGB32 );
         ret = true;
-        std::cout << "CV_8UC4" << std::endl;
         break;
     }
     case CV_8UC3:
@@ -118,8 +90,6 @@ bool MainWindow::MatToQImage(cv::Mat &mat, QImage &image)
             QImage::Format_RGB888 );
         image.rgbSwapped();
         ret = true;
-        std::cout << "CV_8UC3" << std::endl;
-
         break;
     }
     case CV_8UC1:
@@ -129,13 +99,9 @@ bool MainWindow::MatToQImage(cv::Mat &mat, QImage &image)
             static_cast<int>(mat.step),
             QImage::Format_Grayscale8 );
         ret = true;
-        std::cout << "CV_8UC1" << std::endl;
-
         break;
     }
     default:
-        std::cout << "NONE: " << mat.type() << std::endl;
-
         break;
     }
 

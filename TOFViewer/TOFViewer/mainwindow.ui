@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QOpenGLWidget" name="pclOpenGLWidget"/>
+     <widget class="ToFOpenGLWidget" name="pclOpenGLWidget"/>
     </item>
    </layout>
   </widget>
@@ -465,6 +465,13 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>ToFOpenGLWidget</class>
+   <extends>QOpenGLWidget</extends>
+   <header>tofopenglwidget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="resources.qrc"/>
  </resources>

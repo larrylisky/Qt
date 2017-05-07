@@ -29,7 +29,9 @@ void MainWindow::slotVideoTimeout()
             {
                 XYZIPointCloudFrame *xyziFrame = grabber->getXYZIFrame();
                 if (xyziFrame != NULL)
+                {
                     delete xyziFrame;
+                }
             }
 
 
@@ -37,7 +39,9 @@ void MainWindow::slotVideoTimeout()
             {
                 DepthFrame *depthFrame = grabber->getDepthFrame();
                 if (depthFrame)
+                {
                     delete depthFrame;
+                }
             }
 
 
@@ -70,14 +74,16 @@ void MainWindow::slotVideoTimeout()
                         cv::applyColorMap(grayMat, colorMat, cv::COLORMAP_HSV);
                         MatToQPixmap(colorMat, phase_image);
                         QGraphicsScene* phase_scene = new QGraphicsScene();
-                        phase_scene->addPixmap(phase_image.scaled(QSize(w,h), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+                        QGraphicsPixmapItem *item = phase_scene->addPixmap(phase_image.scaled(QSize(w,h), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+                        _ui->phaseGraphicsView->fitInView(item, Qt::KeepAspectRatio);
                         _ui->phaseGraphicsView->setScene(phase_scene);
                         _ui->phaseGraphicsView->show();
 
                         ampMat = ampMat * 10;
                         MatToQPixmap(ampMat, amp_image);
                         QGraphicsScene* amp_scene = new QGraphicsScene();
-                        amp_scene->addPixmap(amp_image.scaled(QSize(w,h), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+                        item = amp_scene->addPixmap(amp_image.scaled(QSize(w,h), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+                        _ui->amplitudeGraphicsView->fitInView(item, Qt::KeepAspectRatio);
                         _ui->amplitudeGraphicsView->setScene(amp_scene);
                         _ui->amplitudeGraphicsView->show();
                     }

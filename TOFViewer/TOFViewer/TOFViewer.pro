@@ -30,10 +30,12 @@ SOURCES         += main.cpp\
     mainwindowslots.cpp \
     timerslots.cpp \
     grabberCallback.cpp \
-    imageFuncs.cpp
+    imageFuncs.cpp \
+    tofopenglwidget.cpp
 
 HEADERS         += mainwindow.h \
-    Grabber.h
+    Grabber.h \
+    tofopenglwidget.h
 
 QMAKE_CXXFLAGS  += -pthread -std=c++11 -fPIC -ffast-math -fpermissive
 
