@@ -31,33 +31,25 @@ Grabber::Grabber(DepthCameraPtr depthCamera, FrameFlag frameFlag, CameraSystem &
 
     setFrameRate(30.0);
 
-#if 0
     if (_frameFlag & FRAMEFLAG_XYZI_POINT_CLOUD_FRAME)
         _depthCamera->registerCallback(DepthCamera::FRAME_XYZI_POINT_CLOUD_FRAME,
             std::bind(&Grabber::_callback, this,
             std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
-#endif
 
-#if 0
     if (_frameFlag & FRAMEFLAG_DEPTH_FRAME)
         _depthCamera->registerCallback(DepthCamera::FRAME_DEPTH_FRAME,
             std::bind(&Grabber::_callback, this,
             std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
-#endif
 
-#if 1
     if (_frameFlag & FRAMEFLAG_RAW_PROCESSED)
         _depthCamera->registerCallback(DepthCamera::FRAME_RAW_FRAME_PROCESSED,
             std::bind(&Grabber::_callback, this,
             std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
-#endif
 
-#if 0
     if (_frameFlag & FRAMEFLAG_RAW_UNPROCESSED)
         _depthCamera->registerCallback(DepthCamera::FRAME_RAW_FRAME_UNPROCESSED,
             std::bind(&Grabber::_callback, this,
             std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
-#endif
 
 }
 
@@ -103,9 +95,9 @@ XYZIPointCloudFrame * Grabber::getXYZIFrame()
 }
 
 
-ToFRawFrameTemplate<uint16_t,uint8_t> * Grabber::getRawFrameProcessed()
+Ptr<Frame> Grabber::getRawFrameProcessed()
 {
-    ToFRawFrameTemplate<uint16_t,uint8_t> *frame = NULL;
+    Ptr<Frame> frame = NULL;
 
     Lock<Mutex> _(_mtx);
 
@@ -119,9 +111,9 @@ ToFRawFrameTemplate<uint16_t,uint8_t> * Grabber::getRawFrameProcessed()
 }
 
 
-ToFRawFrameTemplate<uint16_t,uint8_t> * Grabber::getRawFrameUnprocessed()
+Ptr<Frame> Grabber::getRawFrameUnprocessed()
 {
-    ToFRawFrameTemplate<uint16_t,uint8_t> *frame = NULL;
+    Ptr<Frame> frame = NULL;
 
     Lock<Mutex> _(_mtx);
 
@@ -261,36 +253,43 @@ void Grabber::_callback(DepthCamera &depthCamera, const Frame &frame,
 
         _frameCount++;
     }
+
     else if(type == DepthCamera::FRAME_RAW_FRAME_UNPROCESSED)
     {
         if (_qUnprocessedFrame.size() >= FIFO_SIZE)
         {
-            RawFrame *f = _qUnprocessedFrame.front();
+            Ptr<Frame> f = _qUnprocessedFrame.front();
             _qUnprocessedFrame.pop_front();
-            if (f != NULL)
-                delete f;
+            if (!f.get())
+                delete f.get();
         }
 
-        ToFRawFrameTemplate<uint16_t,uint8_t> *nf = new ToFRawFrameTemplate<uint16_t,uint8_t>();
-        *nf = *dynamic_cast<const ToFRawFrameTemplate<uint16_t,uint8_t> *>(&frame);
-        _qUnprocessedFrame.push_back(nf);
+        RawDataFrame *nf = dynamic_cast<const RawDataFrame *>(&frame);
+        if (nf)
+        {
+            Ptr<Frame> f2 = nf->copy();
+            _qUnprocessedFrame.push_back(f2);
+        }
 
         _frameCount++;
     }
+
     else if (type == DepthCamera::FRAME_RAW_FRAME_PROCESSED)
     {
         if (_qProcessedFrame.size() >= FIFO_SIZE)
         {
-            RawFrame *f = _qProcessedFrame.front();
+            Ptr<Frame> f = _qProcessedFrame.front();
             _qProcessedFrame.pop_front();
-            if (f != NULL)
-                delete f;
+            if (!f.get())
+                delete f.get();
         }
 
-
-        ToFRawFrameTemplate<uint16_t,uint8_t> *nf = new ToFRawFrameTemplate<uint16_t,uint8_t>();
-        *nf = *dynamic_cast<const ToFRawFrameTemplate<uint16_t,uint8_t> *>(&frame);
-        _qProcessedFrame.push_back(nf);
+        ToFRawFrame *nf = dynamic_cast<const ToFRawFrame *>(&frame);
+        if (nf)
+        {
+            Ptr<Frame> f2 = nf->copy();
+            _qProcessedFrame.push_back(f2);
+        }
 
         _frameCount++;
     }

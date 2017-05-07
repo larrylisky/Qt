@@ -409,7 +409,11 @@
         </widget>
        </item>
        <item>
-        <widget class="QGraphicsView" name="phaseGraphicsView"/>
+        <widget class="QGraphicsView" name="phaseGraphicsView">
+         <property name="viewportUpdateMode">
+          <enum>QGraphicsView::FullViewportUpdate</enum>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QLabel" name="amplitudeLabel">

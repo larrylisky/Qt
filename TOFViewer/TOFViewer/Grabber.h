@@ -44,8 +44,8 @@ protected:
     
     deque<DepthFrame* > _qDepthFrame;
     deque<XYZIPointCloudFrame* > _qXYZIFrame;
-    deque<ToFRawFrameTemplate<uint16_t,uint8_t> * > _qProcessedFrame;
-    deque<ToFRawFrameTemplate<uint16_t,uint8_t> * > _qUnprocessedFrame;
+    deque< Ptr<Frame> > _qProcessedFrame;
+    deque< Ptr<Frame> > _qUnprocessedFrame;
     
     FrameFlag _frameFlag;
 
@@ -92,9 +92,9 @@ public:
     
     virtual DepthFrame * getDepthFrame();
 
-    virtual ToFRawFrameTemplate<uint16_t,uint8_t> * getRawFrameProcessed();
+    virtual Ptr<Frame> getRawFrameProcessed();
 
-    virtual ToFRawFrameTemplate<uint16_t,uint8_t> * getRawFrameUnprocessed();
+    virtual Ptr<Frame> getRawFrameUnprocessed();
 
     virtual void setFrameRate(float frameRate);
     

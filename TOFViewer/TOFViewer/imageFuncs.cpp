@@ -8,11 +8,9 @@
 #include "ui_mainwindow.h"
 
 
-bool MainWindow::RawFrameToMat(ToFRawFrame *frame, int rows, int cols,
+void MainWindow::RawFrameToMat(ToFRawFrame *frame, int rows, int cols,
                                  cv::Mat &phase, cv::Mat &amplitude)
 {
-    bool ret = false;
-
     for (auto i=0; i<rows; i++ )
     {
         for (auto j=0; j<cols; j++ )
@@ -33,7 +31,6 @@ bool MainWindow::RawFrameToMat(ToFRawFrame *frame, int rows, int cols,
                 amplitude.at<float>(i,j) = (float)(((uint8_t *)frame->amplitude())[idx]);
         }
     }
-    return ret;
 }
 
 
@@ -61,12 +58,35 @@ bool MainWindow::MatToQImage(cv::Mat &mat, QImage &image)
 
     switch (mat.type())
     {
+    case CV_32FC1:
+    {
+        cv::Mat img = mat;
+
+        QImage im(img.cols, img.rows, QImage::Format_RGB32);
+
+        for (int i = 0; i < img.cols; i++)
+        {
+            for (int j = 0; j < img.rows; j++)
+            {
+                int gray = (int)(img.at<float>(j, i)*255/4095.0);
+                QRgb pixel = qRgb(gray, gray, gray);
+                im.setPixel(i, j, pixel);
+            }
+        }
+        image = im;
+
+        ret = true;
+        break;
+    }
     case CV_8UC4:
     {
         image = QImage( mat.data,
             mat.cols, mat.rows,
             static_cast<int>(mat.step),
             QImage::Format_ARGB32 );
+        ret = true;
+
+        break;
     }
     case CV_8UC3:
     {
@@ -75,6 +95,9 @@ bool MainWindow::MatToQImage(cv::Mat &mat, QImage &image)
             static_cast<int>(mat.step),
             QImage::Format_RGB888 );
         image.rgbSwapped();
+        ret = true;
+
+        break;
     }
     case CV_8UC1:
     {
@@ -82,6 +105,9 @@ bool MainWindow::MatToQImage(cv::Mat &mat, QImage &image)
             mat.cols, mat.rows,
             static_cast<int>(mat.step),
             QImage::Format_Grayscale8 );
+        ret = true;
+
+        break;
     }
     default:
         break;
@@ -97,7 +123,6 @@ bool MainWindow::MatToQPixmap(cv::Mat &mat, QPixmap &pixMap )
     bool ret = false;
 
     QImage qImage;
-
     if (MatToQImage(mat, qImage))
     {
         pixMap = QPixmap::fromImage(qImage);

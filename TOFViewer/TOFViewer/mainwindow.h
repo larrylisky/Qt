@@ -9,6 +9,12 @@
 #include <QPushButton>
 #include <QTimer>
 #include <QMutex>
+#include <QGraphicsScene>
+#include <QPixmap>
+#include <QImage>
+#include <QGraphicsPixmapItem>
+#include <QLineF>
+#include <QRgb>
 
 #include "CameraSystem.h"
 #include "opencv2/opencv.hpp"
@@ -26,7 +32,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    bool RawFrameToMat(ToFRawFrame *frame, int rows, int cols,
+    void RawFrameToMat(ToFRawFrame *frame, int rows, int cols,
                         cv::Mat &phase, cv::Mat &amplitude);
 
     bool DepthFrameToMat(DepthFrame *frame, int rows, int cols,

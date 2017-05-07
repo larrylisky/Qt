@@ -25,48 +25,78 @@ void MainWindow::slotVideoTimeout()
         {           
             Grabber::FrameFlag flag = grabber->getFrameFlag();
 
-#if 0
             if (flag & Grabber::FRAMEFLAG_XYZI_POINT_CLOUD_FRAME )
             {
                 XYZIPointCloudFrame *xyziFrame = grabber->getXYZIFrame();
-                std::cout << "xyziFrame = " << ((xyziFrame == NULL) ? "0":"1") << std::endl;
                 if (xyziFrame != NULL)
                     delete xyziFrame;
             }
-#endif
 
-#if 0
+
             if (flag & Grabber::FRAMEFLAG_DEPTH_FRAME )
             {
                 DepthFrame *depthFrame = grabber->getDepthFrame();
-                std::cout << "depthFrame = " << ((depthFrame == NULL) ? "0":"1") << std::endl;
                 if (depthFrame)
                     delete depthFrame;
             }
-#endif
 
-#if 1
+
+            // Raw processed data comes back at ToFRawFrame that should be cast to
+            // ToFRawFrameTemplate<uint16_t, uint8_t>
             if (flag & Grabber::FRAMEFLAG_RAW_PROCESSED )
             {
-                ToFRawFrameTemplate<uint16_t,uint8_t> *rawFrame = grabber->getRawFrameProcessed();
-                std::cout << "rawFrameProcessed = " << ((rawFrame == NULL) ? "0":"1")
-                          << "  Frame# " << grabber->getFrameCount() << std::endl;
+                Ptr<Frame> f = grabber->getRawFrameProcessed();
 
-                if (rawFrame)
-                    delete rawFrame;
+                if (f && f.get())
+                {
+                    ToFRawFrame *rawFrame = dynamic_cast<ToFRawFrame *>(f.get());
+
+                    if (rawFrame)
+                    {
+                        int rows = rawFrame->size.height;
+                        int cols = rawFrame->size.width;
+
+                        cv::Mat phaseMat = cv::Mat::zeros(rows,cols, CV_32FC1);
+                        cv::Mat ampMat = cv::Mat::zeros(rows, cols, CV_32FC1);
+
+                        RawFrameToMat(rawFrame, rows, cols, phaseMat, ampMat);
+
+                        ampMat = ampMat * 10;
+
+                        QPixmap phase_image, amp_image;
+                        int w = _ui->phaseGraphicsView->geometry().width();
+                        int h = _ui->phaseGraphicsView->geometry().height();
+
+                        MatToQPixmap(phaseMat, phase_image);
+                        QGraphicsScene* phase_scene = new QGraphicsScene();
+                        phase_scene->addPixmap(phase_image.scaled(QSize(w,h), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+                        _ui->phaseGraphicsView->setScene(phase_scene);
+                        _ui->phaseGraphicsView->show();
+
+                        MatToQPixmap(ampMat, amp_image);
+                        QGraphicsScene* amp_scene = new QGraphicsScene();
+                        amp_scene->addPixmap(amp_image.scaled(QSize(w,h), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+                        _ui->amplitudeGraphicsView->setScene(amp_scene);
+                        _ui->amplitudeGraphicsView->show();
+                    }
+                }
             }
-#endif
 
-#if 0
-
+            // Raw unprocessed data comes back at RawDataFrame
             if (flag & Grabber::FRAMEFLAG_RAW_UNPROCESSED )
             {
-                ToFRawFrameTemplate<uint16_t,uint8_t> *rawFrame = grabber->getRawFrameUnprocessed();
-                std::cout << "rawFrameUnprocessed = " << ((rawFrame == NULL) ? "0":"1") << std::endl;
-                if (rawFrame)
-                    delete rawFrame;
+                Ptr<Frame> f = grabber->getRawFrameUnprocessed();
+
+                if (f && f.get())
+                {
+                    RawDataFrame *rawFrame = dynamic_cast<RawDataFrame *>(f.get());
+
+                    if (rawFrame)
+                    {
+
+                    }
+                }
             }
-#endif
         }
     }
     _mtxTimer.unlock();
