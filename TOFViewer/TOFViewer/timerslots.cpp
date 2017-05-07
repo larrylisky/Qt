@@ -58,21 +58,23 @@ void MainWindow::slotVideoTimeout()
 
                         cv::Mat phaseMat = cv::Mat::zeros(rows,cols, CV_32FC1);
                         cv::Mat ampMat = cv::Mat::zeros(rows, cols, CV_32FC1);
-
-                        RawFrameToMat(rawFrame, rows, cols, phaseMat, ampMat);
-
-                        ampMat = ampMat * 10;
-
                         QPixmap phase_image, amp_image;
+
                         int w = _ui->phaseGraphicsView->geometry().width();
                         int h = _ui->phaseGraphicsView->geometry().height();
 
-                        MatToQPixmap(phaseMat, phase_image);
+                        RawFrameToMat(rawFrame, rows, cols, phaseMat, ampMat);
+
+                        cv::Mat colorMat, grayMat;
+                        phaseMat.convertTo(grayMat, CV_8UC1, 255.0);
+                        cv::applyColorMap(grayMat, colorMat, cv::COLORMAP_HSV);
+                        MatToQPixmap(colorMat, phase_image);
                         QGraphicsScene* phase_scene = new QGraphicsScene();
                         phase_scene->addPixmap(phase_image.scaled(QSize(w,h), Qt::KeepAspectRatio, Qt::SmoothTransformation));
                         _ui->phaseGraphicsView->setScene(phase_scene);
                         _ui->phaseGraphicsView->show();
 
+                        ampMat = ampMat * 10;
                         MatToQPixmap(ampMat, amp_image);
                         QGraphicsScene* amp_scene = new QGraphicsScene();
                         amp_scene->addPixmap(amp_image.scaled(QSize(w,h), Qt::KeepAspectRatio, Qt::SmoothTransformation));
