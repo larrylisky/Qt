@@ -7,6 +7,9 @@
 #include <iostream>
 #include <stdlib.h>
 #include <QOpenGLWidget>
+#include <GL/glu.h>
+#include <GL/gl.h>
+#include <GL/glut.h>
 
 #ifndef TOFOPENGLWIDGET_H
 #define TOFOPENGLWIDGET_H
@@ -15,6 +18,7 @@ class ToFOpenGLWidget : public QOpenGLWidget
 {
 public:
     ToFOpenGLWidget(QWidget *parent);
+    ~ToFOpenGLWidget();
 
 protected:
     virtual void initializeGL();

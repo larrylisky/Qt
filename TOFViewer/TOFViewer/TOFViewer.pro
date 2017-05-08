@@ -39,7 +39,7 @@ HEADERS         += mainwindow.h \
 
 QMAKE_CXXFLAGS  += -pthread -std=c++11 -fPIC -ffast-math -fpermissive
 
-LIBS            += $$OPENCV_LIBS $$VOXEL_LIBS $$PCL_LIBS
+LIBS            += $$OPENCV_LIBS $$VOXEL_LIBS $$PCL_LIBS -lGL -lglut -lGLU
 
 FORMS           += mainwindow.ui
 
