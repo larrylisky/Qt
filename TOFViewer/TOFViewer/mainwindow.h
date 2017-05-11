@@ -65,7 +65,7 @@ protected:
     void _setupTimer(int msec);
     void _addMainToolBarButton(QString name);
     uint _numConnectedCameras();
-    void grabberCallback(Grabber *grabber);
+    void _grabberCallback(Grabber *grabber);
 
 private:
     Ui::MainWindow *_ui;
@@ -81,6 +81,7 @@ private:
     QTimer *_timer;
     QTimer *_videoTimer;
     QMutex _mtxTimer;
+
 };
 
 #endif // MAINWINDOW_H

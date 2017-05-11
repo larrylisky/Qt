@@ -21,7 +21,6 @@ ToFOpenGLWidget::~ToFOpenGLWidget()
 
 void ToFOpenGLWidget::initializeGL()
 {
-    std::cout << "Initialized" << std::endl;
     glClearColor(0,0,0,1);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHT0);
@@ -32,8 +31,6 @@ void ToFOpenGLWidget::initializeGL()
 
 void ToFOpenGLWidget::resizeGL(int w, int h)
 {
-    std::cout << "Resized" << std::endl;
-
     glViewport(0,0,w,h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -41,21 +38,42 @@ void ToFOpenGLWidget::resizeGL(int w, int h)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     gluLookAt(0,0,5,0,0,0,0,1,0);
-
 }
 
 void ToFOpenGLWidget::paintGL()
 {
-    std::cout << "Painted" << std::endl;
+    glPushMatrix();
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glBegin(GL_TRIANGLES);
-        glColor3f(1.0, 0.0, 0.0);
-        glVertex3f(-0.5, -0.5, 0);
-        glColor3f(0.0, 1.0, 0.0);
-        glVertex3f( 0.5, -0.5, 0);
-        glColor3f(0.0, 0.0, 1.0);
-        glVertex3f( 0.0,  0.5, 0);
+    glBegin(GL_POINTS);
+        glColor3f(1.0, 1.0, 1.0);
+        glPointSize(2);
+        for (int i=0; i < _frame.size(); i++)
+        {
+            float x = _frame.points[i].x;
+            float y = _frame.points[i].y;
+            float z = _frame.points[i].z;
+            glVertex3f(x, y, z);
+        }
     glEnd();
+
+    glFlush();
+
+    glPopMatrix();
+
 }
+
+
+void ToFOpenGLWidget::drawPointCloud(XYZIPointCloudFrame *frame)
+{
+
+
+    if (frame)
+        _frame = *frame;
+
+    paintGL();
+    update();
+
+}
+

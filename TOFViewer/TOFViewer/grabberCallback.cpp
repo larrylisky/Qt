@@ -8,7 +8,7 @@
 #include "ui_mainwindow.h"
 
 
-void MainWindow::grabberCallback(Grabber *grabber)
+void MainWindow::_grabberCallback(Grabber *grabber)
 {  
     std::cout << "Frame: " << grabber->getFrameCount() << std::endl;
 }

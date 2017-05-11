@@ -30,6 +30,7 @@ void MainWindow::slotVideoTimeout()
                 XYZIPointCloudFrame *xyziFrame = grabber->getXYZIFrame();
                 if (xyziFrame != NULL)
                 {
+                    _ui->pclOpenGLWidget->drawPointCloud(xyziFrame);
                     delete xyziFrame;
                 }
             }
