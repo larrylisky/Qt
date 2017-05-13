@@ -139,7 +139,6 @@ void ToFOpenGLWidget::mouseMoveEvent(QMouseEvent *event)
 
 void ToFOpenGLWidget::wheelEvent(QWheelEvent *event)
 {
-    std::cout << "Wheel: " << event->delta() << std::endl;
     _zoomFactor -= (float)event->delta()/1200.0;
 
 }

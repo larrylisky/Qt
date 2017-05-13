@@ -31,7 +31,7 @@ uint MainWindow::_numConnectedCameras()
 }
 
 
-void MainWindow::_updateCameraMenu()
+void MainWindow::_refreshCameraMenu()
 {
     map< QString, Grabber* > plugged;    // Attached but not connected
     map< QString, Grabber* > connected;  // Attached and connected
@@ -118,14 +118,54 @@ void MainWindow::_updateCameraMenu()
 }
 
 
-void MainWindow::_setupMenu()
+void MainWindow::_refreshProfilesMenu()
+{
+    QMenu *submenu;
+    QAction *action;
+
+    _mtxTimer.lock();
+
+    // Remove old list of connected cameras
+    _ui->menuProfiles->clear();
+    _profileSubmenu.clear();
+
+
+    // Create list of connected cameras
+    map< QString, Grabber* >::iterator itCamera;
+    for (auto const&itCamera : _attachedCamera)
+    {
+        QString name = itCamera.first;
+        Grabber * grabber = itCamera.second;
+
+        if (grabber != NULL)
+        {
+            submenu = _ui->menuProfiles->addMenu(name);
+            _profileSubmenu.push_back(submenu);
+            connect(submenu, SIGNAL(triggered(QAction*)), this, SLOT(slotSetProfiles(QAction*)));
+
+            const Map<int, Voxel::String> &profiles = grabber->getProfiles();
+            for (auto &p: profiles)
+            {
+                QString profile_name = QString(p.second.c_str());
+                ConfigurationFile *c = grabber->getDepthCamera()->configFile.getCameraProfile(p.first);
+                if (c && c->getLocation() == ConfigurationFile::IN_CAMERA)
+                    profile_name = profile_name + " (HW)";
+                action = submenu->addAction(profile_name);
+            }
+        }
+    }
+
+    _mtxTimer.unlock();
+}
+
+void MainWindow::_setupFileMenu()
 {
     _connectSubmenu = _ui->menuFile->addMenu("Connect Camera");
     _connectSubmenu->setIcon(QIcon(QPixmap(":/res/images/connectButton.png")));
     _disconnectSubmenu = _ui->menuFile->addMenu("Disconnect Camera");
     _disconnectSubmenu->setIcon(QIcon(QPixmap(":/res/images/disconnectButton.png")));
 
-    _updateCameraMenu();
+    _refreshCameraMenu();
 
     connect(_connectSubmenu, SIGNAL(aboutToShow()), this, SLOT(slotAboutToShowCamera()));
     connect(_connectSubmenu, SIGNAL(triggered(QAction*)), this, SLOT(slotConnectCamera(QAction *)));
@@ -135,15 +175,36 @@ void MainWindow::_setupMenu()
     QAction *exitAction = _ui->menuFile->addAction("&Exit");
     exitAction->setIcon(QIcon(QPixmap(":/res/images/exitButton.png")));
     connect(exitAction, SIGNAL(triggered()), this, SLOT(slotExit()));
+}
 
-    // Connect sliders
+
+
+
+void MainWindow::_setupSliders()
+{
     connect(_ui->unambDistSlider, SIGNAL(valueChanged(int)), this, SLOT(slotUpdateUnambDist(int)));
     connect(_ui->frameRateSlider, SIGNAL(valueChanged(int)), this, SLOT(slotUpdateFrameRate(int)));
     connect(_ui->integDutyCycleSlider, SIGNAL(valueChanged(int)), this, SLOT(slotUpdateIntegDutyCycle(int)));
     connect(_ui->illumPwrSlider, SIGNAL(valueChanged(int)), this, SLOT(slotUpdateIllumPwr(int)));
+}
 
+
+void MainWindow::_setupMenuToolBar()
+{
     // Camera play control actions
     connect(_ui->mainToolBar, SIGNAL(actionTriggered(QAction*)), this, SLOT(slotMainToolBar(QAction *)));
+}
+
+
+void MainWindow::_setupMenu()
+{
+    _setupFileMenu();
+
+    connect(_ui->menuProfiles, SIGNAL(aboutToShow()), this, SLOT(slotRefreshProfilesMenu()));
+
+    _setupSliders();
+
+    _setupMenuToolBar();
 }
 
 

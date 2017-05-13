@@ -10,7 +10,13 @@
 
 void MainWindow::slotAboutToShowCamera()
 {
-    _updateCameraMenu();
+    _refreshCameraMenu();
+}
+
+
+void MainWindow::slotRefreshProfilesMenu()
+{
+    _refreshProfilesMenu();
 }
 
 
@@ -36,7 +42,7 @@ void MainWindow::slotConnectCamera(QAction *action)
         }
     }
 ret:
-    _updateCameraMenu();
+    _refreshCameraMenu();
 }
 
 
@@ -61,7 +67,7 @@ void MainWindow::slotDisconnectCamera(QAction *action)
         }
     }
 ret:
-    _updateCameraMenu();
+    _refreshCameraMenu();
 }
 
 
@@ -112,7 +118,6 @@ void MainWindow::slotMainToolBar(QAction *action)
 {
     if (action->text() == "Run")
     {
-        std::cout << "slotMainToolBar() Run " << std::endl;
         map< QString, Grabber* >::iterator itCamera;
         for (auto const&itCamera : _attachedCamera)
         {
@@ -130,7 +135,6 @@ void MainWindow::slotMainToolBar(QAction *action)
     }
     else if (action->text() == "Pause")
     {
-        std::cout << "slotMainToolBar() Pause " << std::endl;
         map< QString, Grabber* >::iterator itCamera;
         for (auto const&itCamera : _attachedCamera)
         {
@@ -149,8 +153,13 @@ void MainWindow::slotMainToolBar(QAction *action)
     else
     {
         std::cout << "slotMainToolBar() Toggle Camera " << action->text().toStdString() << std::endl;
-
     }
 }
 
+
+
+void MainWindow::slotSetProfiles(QAction *action)
+{
+    std::cout << "slotSetProfiles()->" << action->text().toStdString() << std::endl;
+}
 

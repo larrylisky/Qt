@@ -58,10 +58,19 @@ public slots:
     void slotTimeout();
     void slotVideoTimeout();
 
+    void slotSetProfiles(QAction *action);
+    void slotRefreshProfilesMenu();
 
-protected:
-    void _updateCameraMenu();
+
+protected:   
     void _setupMenu();
+    void _setupFileMenu();
+    void _setupSliders();
+    void _setupMenuToolBar();
+
+    void _refreshCameraMenu();
+    void _refreshProfilesMenu();
+
     void _setupTimer(int msec);
     void _addMainToolBarButton(QString name);
     uint _numConnectedCameras();
@@ -71,6 +80,7 @@ private:
     Ui::MainWindow *_ui;
     QMenu *_connectSubmenu;
     QMenu *_disconnectSubmenu;
+    vector<QMenu *> _profileSubmenu;
 
     Voxel::CameraSystem _sys;
     std::vector< DevicePtr > _device;

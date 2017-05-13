@@ -10,7 +10,7 @@
 
 void MainWindow::slotTimeout()
 {  
-    _updateCameraMenu();
+    _refreshCameraMenu();
 }
 
 
