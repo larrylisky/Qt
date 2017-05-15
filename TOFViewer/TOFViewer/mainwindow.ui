@@ -31,34 +31,37 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>FIle</string>
+     <string>&amp;File</string>
     </property>
    </widget>
-   <widget class="QMenu" name="menuProfiles">
+   <widget class="QMenu" name="menuProfile">
     <property name="title">
-     <string>Profiles</string>
+     <string>&amp;Profile</string>
     </property>
    </widget>
-   <widget class="QMenu" name="menuSettings">
+   <widget class="QMenu" name="menuSetting">
     <property name="title">
-     <string>Settings</string>
+     <string>&amp;Settings</string>
     </property>
    </widget>
    <widget class="QMenu" name="menuWindows">
     <property name="title">
-     <string>Windows</string>
+     <string>&amp;Windows</string>
     </property>
+    <addaction name="actionCamera_Images"/>
+    <addaction name="actionSettings"/>
+    <addaction name="actionInformation"/>
    </widget>
-   <widget class="QMenu" name="menuHelp">
+   <widget class="QMenu" name="menu_Help">
     <property name="title">
-     <string>Help</string>
+     <string>&amp;Help</string>
     </property>
    </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuProfiles"/>
-   <addaction name="menuSettings"/>
+   <addaction name="menuProfile"/>
+   <addaction name="menuSetting"/>
    <addaction name="menuWindows"/>
-   <addaction name="menuHelp"/>
+   <addaction name="menu_Help"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="sizePolicy">
@@ -483,6 +486,39 @@
   <action name="actionAbout_TOFViewer_2">
    <property name="text">
     <string>About TOFViewer</string>
+   </property>
+  </action>
+  <action name="actionCamera_Images">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Camera Images</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Settings</string>
+   </property>
+  </action>
+  <action name="actionInformation">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Information</string>
    </property>
   </action>
  </widget>

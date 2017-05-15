@@ -18,7 +18,7 @@
 
 #include "CameraSystem.h"
 #include "opencv2/opencv.hpp"
-#include "Grabber.h"
+#include "grabber.h"
 
 namespace Ui {
 class MainWindow;
@@ -59,22 +59,47 @@ public slots:
     void slotVideoTimeout();
 
     void slotSetProfiles(QAction *action);
-    void slotRefreshProfilesMenu();
+    void slotRefreshProfileMenu();
 
+    void slotWindowsAction(QAction *action);
+
+    void slotInfoDockWidgetVisChanged(bool checked);
+    void slotImageDockWidgetVisChanged(bool checked);
+    void slotSettingsDockWidgetVisChanged(bool checked);
 
 protected:   
     void _setupMenu();
     void _setupFileMenu();
+    void _setupWindowsMenu();
     void _setupSliders();
     void _setupMenuToolBar();
+    void _setupTimer();
+    void _setupDockWidgets();
 
     void _refreshCameraMenu();
-    void _refreshProfilesMenu();
+    void _refreshProfileMenu();
 
-    void _setupTimer(int msec);
+    void _scanCamera();
     void _addMainToolBarButton(QString name);
     uint _numConnectedCameras();
-    void _grabberCallback(Grabber *grabber);
+    bool _isIn(QString name, vector<QString> &vec);
+
+    template<typename MapT, typename KeyT, typename ValueT>
+    bool _findKeyByValue(MapT &map, ValueT value, KeyT &key)
+    {
+        bool ret = false;
+        typename MapT::iterator it;
+        for (it = map.begin(); it != map.end(); ++it )
+        {
+            if (it->second == value)
+            {
+                key = it->first;
+                ret = true;
+                break;
+            }
+        }
+        return ret;
+    }
 
 private:
     Ui::MainWindow *_ui;
@@ -84,9 +109,10 @@ private:
 
     Voxel::CameraSystem _sys;
     std::vector< DevicePtr > _device;
-    std::map< QString, Grabber* > _attachedCamera;
-    std::map< QString, QPushButton* > _cameraSelectButton;
-    std::map< QString, QAction* > _cameraSelectButtonAction;
+    std::map< QString, DevicePtr> _disconnected;
+    std::map< QString, Grabber* > _connected;
+    std::map< QString, QAction* > _cameraSelectAction;
+    Grabber * _currGrabber;
 
     QTimer *_timer;
     QTimer *_videoTimer;

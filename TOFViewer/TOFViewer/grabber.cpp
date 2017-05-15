@@ -4,10 +4,21 @@
  * Copyright (c) 2017 Texas Instruments Inc.
  */
 
-#include "Grabber.h"
+#include "grabber.h"
 
 #define FIFO_SIZE       3
 
+
+/*!
+ *=============================================================================
+ *
+ * \brief Grabber::Grabber
+ * \param depthCamera
+ * \param frameFlag
+ * \param sys
+ *
+ *=============================================================================
+ */
 Grabber::Grabber(DepthCameraPtr depthCamera, FrameFlag frameFlag, CameraSystem &sys) :
         _depthCamera(depthCamera), _frameFlag(frameFlag), _sys(sys)
 {  
@@ -55,6 +66,14 @@ Grabber::Grabber(DepthCameraPtr depthCamera, FrameFlag frameFlag, CameraSystem &
 
 
 
+/*!
+ *=============================================================================
+ *
+ * \brief Grabber::getFrameCount
+ * \return
+ *
+ *=============================================================================
+ */
 uint32_t Grabber::getFrameCount()
 { 
     Lock<Mutex> _(_mtx);
@@ -63,6 +82,14 @@ uint32_t Grabber::getFrameCount()
 }
 
 
+/*!
+ *=============================================================================
+ *
+ * \brief Grabber::getDepthFrame
+ * \return
+ *
+ *=============================================================================
+ */
 DepthFrame * Grabber::getDepthFrame()
 {
     DepthFrame *frame = NULL;
@@ -79,6 +106,14 @@ DepthFrame * Grabber::getDepthFrame()
 }
 
 
+/*!
+ *=============================================================================
+ *
+ * \brief Grabber::getXYZIFrame
+ * \return
+ *
+ *=============================================================================
+ */
 XYZIPointCloudFrame * Grabber::getXYZIFrame()
 {
     XYZIPointCloudFrame *frame = NULL;
@@ -95,6 +130,14 @@ XYZIPointCloudFrame * Grabber::getXYZIFrame()
 }
 
 
+/*!
+ *=============================================================================
+ *
+ * \brief Grabber::getRawFrameProcessed
+ * \return
+ *
+ *=============================================================================
+ */
 Ptr<Frame> Grabber::getRawFrameProcessed()
 {
     Ptr<Frame> frame = NULL;
@@ -111,6 +154,14 @@ Ptr<Frame> Grabber::getRawFrameProcessed()
 }
 
 
+/*!
+ *=============================================================================
+ *
+ * \brief Grabber::getRawFrameUnprocessed
+ * \return
+ *
+ *=============================================================================
+ */
 Ptr<Frame> Grabber::getRawFrameUnprocessed()
 {
     Ptr<Frame> frame = NULL;
@@ -127,6 +178,14 @@ Ptr<Frame> Grabber::getRawFrameUnprocessed()
 }
 
 
+/*!
+ *=============================================================================
+ *
+ * \brief Grabber::setFrameRate
+ * \param frameRate
+ *
+ *=============================================================================
+ */
 void Grabber::setFrameRate(float frameRate)
 {
     FrameRate r;
@@ -141,12 +200,27 @@ void Grabber::setFrameRate(float frameRate)
 }
 
 
+/*!
+ *=============================================================================
+ *
+ * \brief Grabber::registerUpdate
+ * \param update
+ *
+ *=============================================================================
+ */
 void Grabber::registerUpdate(std::function<void(Grabber *g)> update)
 {
     _update = update;
 }
 
 
+/*!
+ *=============================================================================
+ *
+ * \brief Grabber::run
+ *
+ *=============================================================================
+ */
 void Grabber::run()
 {
     start();
@@ -160,12 +234,30 @@ void Grabber::run()
 }
 
 
+/*!
+ *=============================================================================
+ *
+ * \brief Grabber::getProfiles
+ * \return
+ *
+ *=============================================================================
+ */
 const Map<int, Voxel::String> &Grabber::getProfiles()
 {
     return _depthCamera->getCameraProfileNames();
 }
 
 
+
+/*!
+ *=============================================================================
+ *
+ * \brief Grabber::setProfile
+ * \param name
+ * \return
+ *
+ *=============================================================================
+ */
 bool Grabber::setProfile(Voxel::String name)
 {
     bool rc = false;
@@ -194,14 +286,32 @@ bool Grabber::setProfile(Voxel::String name)
 }
 
 
+/*!
+ *=============================================================================
+ *
+ * \brief Grabber::getSerialNumber
+ * \param str
+ * \return
+ *
+ *=============================================================================
+ */
 bool Grabber::getSerialNumber(std::string &str)
 {
     return _depthCamera->getSerialNumber(str);
 }
 
 
+
 //=======  Protected methods  ========
 
+
+/*!
+ *=============================================================================
+ *
+ * \brief Grabber::_applyFilter
+ *
+ *=============================================================================
+ */
 void Grabber::_applyFilter()
 {
     FilterPtr p = _sys.createFilter("Voxel::MedianFilter", 
@@ -216,6 +326,16 @@ void Grabber::_applyFilter()
 }
 
 
+/*!
+ *=============================================================================
+ *
+ * \brief Grabber::_callback
+ * \param depthCamera
+ * \param frame
+ * \param type
+ *
+ *=============================================================================
+ */
 void Grabber::_callback(DepthCamera &depthCamera, const Frame &frame, 
 				DepthCamera::FrameType type)
 {

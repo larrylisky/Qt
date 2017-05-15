@@ -8,6 +8,18 @@
 #include "ui_mainwindow.h"
 
 
+/*!
+ *=============================================================================
+ *
+ * \brief MainWindow::RawFrameToMat
+ * \param frame
+ * \param rows
+ * \param cols
+ * \param phase
+ * \param amplitude
+ *
+ *=============================================================================
+ */
 void MainWindow::RawFrameToMat(ToFRawFrame *frame, int rows, int cols,
                                  cv::Mat &phase, cv::Mat &amplitude)
 {
@@ -30,6 +42,20 @@ void MainWindow::RawFrameToMat(ToFRawFrame *frame, int rows, int cols,
 }
 
 
+
+/*!
+ *=============================================================================
+ *
+ * \brief MainWindow::DepthFrameToMat
+ * \param frame
+ * \param rows
+ * \param cols
+ * \param depth
+ * \param amplitude
+ * \return
+ *
+ *=============================================================================
+ */
 bool MainWindow::DepthFrameToMat(DepthFrame *frame, int rows, int cols,
                                  cv::Mat &depth, cv::Mat &amplitude)
 {
@@ -48,6 +74,17 @@ bool MainWindow::DepthFrameToMat(DepthFrame *frame, int rows, int cols,
 }
 
 
+
+/*!
+ *=============================================================================
+ *
+ * \brief MainWindow::MatToQImage
+ * \param mat
+ * \param image
+ * \return
+ *
+ *=============================================================================
+ */
 bool MainWindow::MatToQImage(cv::Mat &mat, QImage &image)
 {
     bool ret = false;
@@ -109,7 +146,16 @@ bool MainWindow::MatToQImage(cv::Mat &mat, QImage &image)
 }
 
 
-
+/*!
+ *=============================================================================
+ *
+ * \brief MainWindow::MatToQPixmap
+ * \param mat
+ * \param pixMap
+ * \return
+ *
+ *=============================================================================
+ */
 bool MainWindow::MatToQPixmap(cv::Mat &mat, QPixmap &pixMap )
 {
     bool ret = false;

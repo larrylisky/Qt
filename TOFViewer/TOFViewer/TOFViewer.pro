@@ -26,16 +26,21 @@ INCLUDEPATH     += . $$VOXEL_INC $$OPENCV_INC $$PCL_INC
 
 SOURCES         += main.cpp\
                     mainwindow.cpp \
-    Grabber.cpp \
-    mainwindowslots.cpp \
-    timerslots.cpp \
-    grabberCallback.cpp \
     imageFuncs.cpp \
-    tofopenglwidget.cpp
+    tofopenglwidget.cpp \
+    mainwindow_support.cpp \
+    mainwindow_filemenu.cpp \
+    mainwindow_profilemenu.cpp \
+    mainwindow_maintoolbar.cpp \
+    mainwindow_slider.cpp \
+    mainwindow_timer.cpp \
+    mainwindow_windowsmenu.cpp \
+    mainwindow_dockwidgets.cpp \
+    grabber.cpp
 
 HEADERS         += mainwindow.h \
-    Grabber.h \
-    tofopenglwidget.h
+    tofopenglwidget.h \
+    grabber.h
 
 QMAKE_CXXFLAGS  += -pthread -std=c++11 -fPIC -ffast-math -fpermissive
 

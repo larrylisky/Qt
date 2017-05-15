@@ -80,6 +80,8 @@ public:
 
     virtual bool isRunning() const { return _depthCamera->isRunning(); }
 
+    virtual bool isInitialized() const { return _depthCamera->isInitialized(); }
+
     virtual void start() { _depthCamera->start(); }
 
     virtual void stop() { _depthCamera->stop(); _depthCamera->wait(); }

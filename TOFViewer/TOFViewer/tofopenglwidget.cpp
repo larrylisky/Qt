@@ -7,6 +7,14 @@
 #include "tofopenglwidget.h"
 
 
+/*!
+ *=============================================================================
+ *
+ * \brief ToFOpenGLWidget::ToFOpenGLWidget
+ * \param parent
+ *
+ *=============================================================================
+ */
 ToFOpenGLWidget::ToFOpenGLWidget(QWidget *parent)
     : QOpenGLWidget(parent)
 {
@@ -18,12 +26,26 @@ ToFOpenGLWidget::ToFOpenGLWidget(QWidget *parent)
 }
 
 
+/*!
+ *=============================================================================
+ *
+ * \brief ToFOpenGLWidget::~ToFOpenGLWidget
+ *
+ *=============================================================================
+ */
 ToFOpenGLWidget::~ToFOpenGLWidget()
 {
 
 }
 
 
+/*!
+ *=============================================================================
+ *
+ * \brief ToFOpenGLWidget::initializeGL
+ *
+ *=============================================================================
+ */
 void ToFOpenGLWidget::initializeGL()
 {
     GLfloat light0_position[] = { 20.0, 20.0, -20.0, 0.0 };
@@ -41,6 +63,15 @@ void ToFOpenGLWidget::initializeGL()
 }
 
 
+/*!
+ *=============================================================================
+ *
+ * \brief ToFOpenGLWidget::resizeGL
+ * \param w
+ * \param h
+ *
+ *=============================================================================
+ */
 void ToFOpenGLWidget::resizeGL(int w, int h)
 {
     glViewport(0,0,w,h);
@@ -52,6 +83,14 @@ void ToFOpenGLWidget::resizeGL(int w, int h)
     gluLookAt(0,0,10,0,0,0,0,1,0);
 }
 
+
+/*!
+ *=============================================================================
+ *
+ * \brief ToFOpenGLWidget::paintGL
+ *
+ *=============================================================================
+ */
 void ToFOpenGLWidget::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -86,6 +125,14 @@ void ToFOpenGLWidget::paintGL()
 }
 
 
+/*!
+ *=============================================================================
+ *
+ * \brief ToFOpenGLWidget::drawPointCloud
+ * \param frame
+ *
+ *=============================================================================
+ */
 void ToFOpenGLWidget::drawPointCloud(XYZIPointCloudFrame *frame)
 {
     if (frame)
@@ -96,6 +143,14 @@ void ToFOpenGLWidget::drawPointCloud(XYZIPointCloudFrame *frame)
 }
 
 
+/*!
+ *=============================================================================
+ *
+ * \brief ToFOpenGLWidget::mousePressEvent
+ * \param event
+ *
+ *=============================================================================
+ */
 void ToFOpenGLWidget::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == 1)
@@ -112,6 +167,14 @@ void ToFOpenGLWidget::mousePressEvent(QMouseEvent *event)
 }
 
 
+/*!
+ *=============================================================================
+ *
+ * \brief ToFOpenGLWidget::mouseReleaseEvent
+ * \param event
+ *
+ *=============================================================================
+ */
 void ToFOpenGLWidget::mouseReleaseEvent(QMouseEvent *event)
 {
     if (event->button() == 1)
@@ -127,22 +190,47 @@ void ToFOpenGLWidget::mouseReleaseEvent(QMouseEvent *event)
 }
 
 
+/*!
+ *=============================================================================
+ *
+ * \brief ToFOpenGLWidget::mouseMoveEvent
+ * \param event
+ *
+ *=============================================================================
+ */
 void ToFOpenGLWidget::mouseMoveEvent(QMouseEvent *event)
 {
     if (_leftButtonPressed)
     {
-        _rotY = event->pos().x() - _startPos.x();
-        _rotX = event->pos().y() - _startPos.y();
+        float speed = 0.5;
+        _rotY = speed * (event->pos().x() - _startPos.x());
+        _rotX = speed * (event->pos().y() - _startPos.y());
     }
 }
 
 
+/*!
+ *=============================================================================
+ *
+ * \brief ToFOpenGLWidget::wheelEvent
+ * \param event
+ *
+ *=============================================================================
+ */
 void ToFOpenGLWidget::wheelEvent(QWheelEvent *event)
 {
     _zoomFactor -= (float)event->delta()/1200.0;
 
 }
 
+
+/*!
+ *=============================================================================
+ *
+ * \brief ToFOpenGLWidget::_drawAxis
+ *
+ *=============================================================================
+ */
 void ToFOpenGLWidget::_drawAxis()
 {
     // x axis- red
