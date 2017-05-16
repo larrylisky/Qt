@@ -106,6 +106,10 @@ public:
 
     virtual const Map<int, Voxel::String> &getProfiles();
 
+    virtual int getCurrentProfileID() { return _depthCamera->getCurrentCameraProfileID(); }
+
+    virtual Voxel::String getCurrentProfileName();
+
     virtual bool setProfile(Voxel::String name);
 
     virtual bool setRegister(Voxel::String name, uint value)

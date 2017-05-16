@@ -58,8 +58,8 @@ public slots:
     void slotTimeout();
     void slotVideoTimeout();
 
-    void slotSetProfiles(QAction *action);
-    void slotRefreshProfileMenu();
+    void slotSetProfile(QAction *action);
+    void slotAboutToShowProfileMenu();
 
     void slotWindowsAction(QAction *action);
 
@@ -73,6 +73,7 @@ protected:
     void _setupWindowsMenu();
     void _setupSliders();
     void _setupMenuToolBar();
+    void _setupProfileMenu();
     void _setupTimer();
     void _setupDockWidgets();
 

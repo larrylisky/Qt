@@ -450,15 +450,6 @@
     </layout>
    </widget>
   </widget>
-  <action name="actionAbout_TOFViewer">
-   <property name="icon">
-    <iconset resource="resources.qrc">
-     <normaloff>:/res/images/helpButton.png</normaloff>:/res/images/helpButton.png</iconset>
-   </property>
-   <property name="text">
-    <string>About TOFViewer</string>
-   </property>
-  </action>
   <action name="actionRun">
    <property name="icon">
     <iconset resource="resources.qrc">
@@ -481,11 +472,6 @@
    </property>
    <property name="toolTip">
     <string>Pause</string>
-   </property>
-  </action>
-  <action name="actionAbout_TOFViewer_2">
-   <property name="text">
-    <string>About TOFViewer</string>
    </property>
   </action>
   <action name="actionCamera_Images">

@@ -252,6 +252,33 @@ const Map<int, Voxel::String> &Grabber::getProfiles()
 /*!
  *=============================================================================
  *
+ * \brief Grabber::getCurrentProfileName
+ * \return
+ *
+ *=============================================================================
+ */
+Voxel::String Grabber::getCurrentProfileName()
+{
+    int id = getCurrentProfileID();
+    const Map<int, Voxel::String> &profiles =
+                            _depthCamera->getCameraProfileNames();
+    for (auto &p: profiles)
+    {
+        if (p.first == id)
+        {
+            Voxel::String name = p.second;
+            return name;
+        }
+    }
+
+    return NULL;
+}
+
+
+
+/*!
+ *=============================================================================
+ *
  * \brief Grabber::setProfile
  * \param name
  * \return
@@ -265,8 +292,12 @@ bool Grabber::setProfile(Voxel::String name)
                             _depthCamera->getCameraProfileNames();
     for (auto &p: profiles) 
     {
+        std::cout << "Checking (" << p.second << ") against name (" << name << ")" << std::endl;
+
         if (p.second == name) 
         {
+            std::cout << "found" << std::endl;
+
             int profile_id = p.first;
             
             ConfigurationFile *c = 
@@ -274,8 +305,12 @@ bool Grabber::setProfile(Voxel::String name)
                 
             if (c && c->getLocation() == ConfigurationFile::IN_CAMERA) 
             {
+                std::cout << "setting" << std::endl;
+
                 if (_depthCamera->setCameraProfile(profile_id)) 
                 {
+                    std::cout << "set" << std::endl;
+
                     rc = true;
                     break;
                 }

@@ -178,6 +178,8 @@ ret:
  */
 void MainWindow::slotDisconnectCamera(QAction *action)
 {
+    bool findNewGrabber = false;
+
     map< QString, Grabber* >::iterator it;
     for (auto const&it : _connected)
     {
@@ -185,6 +187,10 @@ void MainWindow::slotDisconnectCamera(QAction *action)
         if (name == action->text())
         {
             Grabber *grabber = it.second;
+
+            if (grabber == _currGrabber)
+                findNewGrabber = true;
+
             _sys.disconnect(grabber->getDepthCamera());
             delete grabber;
             _connected.erase(name);
@@ -192,7 +198,22 @@ void MainWindow::slotDisconnectCamera(QAction *action)
             goto ret;
         }
     }
+
 ret:
+    if (findNewGrabber)
+    {
+        if (_connected.size() > 0)
+        {
+            _currGrabber = _connected.begin()->second;
+            std::cout << "Found new grabber" << std::endl;
+        }
+        else
+        {
+            _currGrabber = NULL;
+            std::cout << "No more grabbers" << std::endl;
+        }
+    }
+
     _refreshCameraMenu();
 }
 

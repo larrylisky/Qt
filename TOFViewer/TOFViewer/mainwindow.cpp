@@ -22,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     _ui->setupUi(this);
     _setupFileMenu();
+    _setupProfileMenu();
     _setupMenuToolBar();
     _setupWindowsMenu();
     _setupSliders();
