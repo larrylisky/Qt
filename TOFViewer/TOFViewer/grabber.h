@@ -112,6 +112,10 @@ public:
 
     virtual bool setProfile(Voxel::String name);
 
+    virtual Ptr< RegisterProgrammer > getProgrammer() { return _depthCamera->getProgrammer(); }
+
+    virtual Map<String, ParameterPtr> getParameters() { return _depthCamera->getParameters(); }
+
     virtual bool setRegister(Voxel::String name, uint value)
                     { return _depthCamera->set(name, value); }
                         

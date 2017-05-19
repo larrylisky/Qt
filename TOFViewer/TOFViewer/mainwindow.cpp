@@ -30,6 +30,8 @@ MainWindow::MainWindow(QWidget *parent) :
     _currGrabber = NULL;
 
     _setupDockWidgets();
+    _setupParameterWindow();
+
 }
 
 

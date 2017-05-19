@@ -205,6 +205,7 @@ ret:
         if (_connected.size() > 0)
         {
             _currGrabber = _connected.begin()->second;
+            _refreshParameterWindow();
             std::cout << "Found new grabber" << std::endl;
         }
         else

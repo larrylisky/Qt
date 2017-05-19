@@ -36,7 +36,8 @@ SOURCES         += main.cpp\
     mainwindow_timer.cpp \
     mainwindow_windowsmenu.cpp \
     mainwindow_dockwidgets.cpp \
-    grabber.cpp
+    grabber.cpp \
+    mainwindow_parameter.cpp
 
 HEADERS         += mainwindow.h \
     tofopenglwidget.h \

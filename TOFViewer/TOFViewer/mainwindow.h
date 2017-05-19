@@ -15,6 +15,8 @@
 #include <QGraphicsPixmapItem>
 #include <QLineF>
 #include <QRgb>
+#include <QStandardItemModel>
+
 
 #include "CameraSystem.h"
 #include "opencv2/opencv.hpp"
@@ -67,6 +69,8 @@ public slots:
     void slotImageDockWidgetVisChanged(bool checked);
     void slotSettingsDockWidgetVisChanged(bool checked);
 
+    void slotTabBarClicked(int);
+
 protected:   
     void _setupMenu();
     void _setupFileMenu();
@@ -76,9 +80,12 @@ protected:
     void _setupProfileMenu();
     void _setupTimer();
     void _setupDockWidgets();
+    void _setupParameterWindow();
 
     void _refreshCameraMenu();
     void _refreshProfileMenu();
+    void _refreshParameterWindow();
+
 
     void _scanCamera();
     void _addMainToolBarButton(QString name);
@@ -118,6 +125,9 @@ private:
     QTimer *_timer;
     QTimer *_videoTimer;
     QMutex _mtxTimer;
+
+    QStandardItemModel *_paramModel;
+
 
 };
 

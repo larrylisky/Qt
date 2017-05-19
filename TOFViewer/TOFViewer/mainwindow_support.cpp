@@ -70,9 +70,13 @@ void MainWindow::_scanCamera()
     // Reestablish _currGrabber in case _currGrabber was disconnected
     QString key;
     if (!_findKeyByValue< std::map< QString, Grabber* >, QString, Grabber* >(_connected, _currGrabber, key))
+    {
         if (_connected.size() > 0)
+        {
             _currGrabber = _connected.begin()->second;
-
+            _refreshParameterWindow();
+        }
+    }
 }
 
 
