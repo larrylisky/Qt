@@ -47,11 +47,11 @@ void MainWindow::_refreshParameterWindow()
 
 
         int row = 0;
-        std::map< QString, ParameterPtr>::iterator itParam;
-        for (auto const&itParam : params)
+        std::map< String, ParameterPtr> ordered(params.begin(), params.end()); // sort
+        for (auto itParam = ordered.begin(); itParam != ordered.end(); itParam++)
         {
-            QString name = QString(itParam.first.c_str());
-            ParameterPtr p = itParam.second;
+            QString name = QString(itParam->first.c_str());
+            ParameterPtr p = itParam->second;
             p->refresh();
 
             BoolParameter *boolParam = dynamic_cast<BoolParameter *>(p.get());

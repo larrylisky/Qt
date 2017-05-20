@@ -387,14 +387,14 @@
               </size>
              </property>
              <property name="autoFillBackground">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <property name="text">
               <string/>
              </property>
              <property name="icon">
-              <iconset>
-               <normaloff>:/rec/images/saveButton.png</normaloff>:/rec/images/saveButton.png</iconset>
+              <iconset resource="resources.qrc">
+               <normaloff>:/res/images/saveButton.png</normaloff>:/res/images/saveButton.png</iconset>
              </property>
             </widget>
            </item>
