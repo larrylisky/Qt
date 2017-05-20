@@ -20,8 +20,10 @@
  */
 void MainWindow::_setupParameterWindow()
 {
+    connect(_ui->lineEdit, SIGNAL(textChanged(QString)), this, SLOT(slotParamChanged(QString)));
     connect(_ui->paramTabWidget, SIGNAL(tabBarClicked(int)), this, SLOT(slotTabBarClicked(int)));
 }
+
 
 
 /*!
@@ -35,20 +37,24 @@ void MainWindow::_refreshParameterWindow()
 {
     if (_currGrabber)
     {      
-        Ptr<RegisterProgrammer> programmer = _currGrabber->getProgrammer();
-        Map<String, ParameterPtr> params = _currGrabber->getParameters();
+        QString prefix = _ui->lineEdit->text();
+        std::map< String, ParameterPtr> subset;
 
-        _paramModel = new QStandardItemModel(params.size(), 3, this);
+        Ptr<RegisterProgrammer> programmer = _currGrabber->getProgrammer();
+        Map< Voxel::String, Voxel::ParameterPtr> params = _currGrabber->getParameters();
+        std::map< Voxel::String, Voxel::ParameterPtr> ordered(params.begin(), params.end()); // sort
+
+        String partial = String(prefix.toStdString().c_str());
+        _findPrefix< std::map<Voxel::String, Voxel::ParameterPtr>, String>(ordered, partial, subset);
+
+        _paramModel = new QStandardItemModel(subset.size(), 3, this);
         _paramModel->setHorizontalHeaderItem(0, new QStandardItem(QString("Name")));
         _paramModel->setHorizontalHeaderItem(1, new QStandardItem(QString("Value")));
         _paramModel->setHorizontalHeaderItem(2, new QStandardItem(QString("Unit")));
-
         _ui->tableView->setModel(_paramModel);
 
-
         int row = 0;
-        std::map< String, ParameterPtr> ordered(params.begin(), params.end()); // sort
-        for (auto itParam = ordered.begin(); itParam != ordered.end(); itParam++)
+        for (auto itParam = subset.begin(); itParam != subset.end(); itParam++)
         {
             QString name = QString(itParam->first.c_str());
             ParameterPtr p = itParam->second;
@@ -85,7 +91,6 @@ void MainWindow::_refreshParameterWindow()
                 index = _paramModel->index(row, 1, QModelIndex());
                 _paramModel->setData(index, QVariant(value));
             }
-
             else if (intParam)
             {
                 int value;
@@ -104,7 +109,6 @@ void MainWindow::_refreshParameterWindow()
 
 
             }
-
             else if (uintParam)
             {
                 uint value;
@@ -121,7 +125,6 @@ void MainWindow::_refreshParameterWindow()
                 index = _paramModel->index(row, 2, QModelIndex());
                 _paramModel->setData(index, QVariant(QString(uintParam->unit().c_str())));
             }
-
             else if (floatParam)
             {
                 float value;
@@ -138,7 +141,6 @@ void MainWindow::_refreshParameterWindow()
                 index = _paramModel->index(row, 2, QModelIndex());
                 _paramModel->setData(index, QVariant(QString(floatParam->unit().c_str())));
             }
-
             else if (enumParam)
             {
                 int value;
@@ -168,6 +170,14 @@ void MainWindow::_refreshParameterWindow()
 }
 
 
+/*!
+ *=============================================================================
+ *
+ * \brief MainWindow::slotTabBarClicked
+ * \param tab
+ *
+ *=============================================================================
+ */
 void MainWindow::slotTabBarClicked(int tab)
 {
     if (tab == TAB_SLIDER)
@@ -178,4 +188,19 @@ void MainWindow::slotTabBarClicked(int tab)
     {
         _refreshParameterWindow();
     }
+}
+
+
+
+/*!
+ *=============================================================================
+ *
+ * \brief MainWindow::slotParamChanged
+ * \param text
+ *
+ *=============================================================================
+ */
+void MainWindow::slotParamChanged(QString text)
+{
+    _refreshParameterWindow();
 }

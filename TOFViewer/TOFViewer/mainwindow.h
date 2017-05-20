@@ -70,6 +70,8 @@ public slots:
     void slotSettingsDockWidgetVisChanged(bool checked);
 
     void slotTabBarClicked(int);
+    void slotParamChanged(QString text);
+
 
 protected:   
     void _setupMenu();
@@ -92,6 +94,7 @@ protected:
     uint _numConnectedCameras();
     bool _isIn(QString name, vector<QString> &vec);
 
+
     template<typename MapT, typename KeyT, typename ValueT>
     bool _findKeyByValue(MapT &map, ValueT value, KeyT &key)
     {
@@ -108,6 +111,21 @@ protected:
         }
         return ret;
     }
+
+    template<typename MapT, typename KeyT>
+    void _findPrefix(MapT &inMap, KeyT &searchFor, MapT &outMap)
+    {
+        outMap.clear();
+
+        typename MapT::const_iterator i;
+        for (i = inMap.begin(); i != inMap.end(); i++)
+        {
+            const KeyT &key = i->first;
+            if (key.compare(0, searchFor.size(), searchFor) == 0)
+                outMap[i->first] = i->second;
+        }
+    }
+
 
 private:
     Ui::MainWindow *_ui;

@@ -79,6 +79,3 @@ void MainWindow::_scanCamera()
     }
 }
 
-
-
-
