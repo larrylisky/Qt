@@ -70,6 +70,7 @@ void MainWindow::slotMainToolBar(QAction *action)
     {
         std::cout << "slotMainToolBar() Toggle Camera " << action->text().toStdString() << std::endl;
         _currGrabber = _connected[action->text()];
+        _refreshParameterWindow();
     }
 }
 

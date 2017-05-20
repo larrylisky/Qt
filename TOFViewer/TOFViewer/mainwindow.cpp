@@ -21,13 +21,15 @@ MainWindow::MainWindow(QWidget *parent) :
     _ui(new Ui::MainWindow)
 {
     _ui->setupUi(this);
+
+    _currGrabber = NULL;
+
     _setupFileMenu();
     _setupProfileMenu();
     _setupMenuToolBar();
     _setupWindowsMenu();
     _setupSliders();
     _setupTimer();
-    _currGrabber = NULL;
 
     _setupDockWidgets();
     _setupParameterWindow();

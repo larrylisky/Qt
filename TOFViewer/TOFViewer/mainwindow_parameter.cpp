@@ -79,14 +79,6 @@ void MainWindow::_refreshParameterWindow()
                                       << name.toStdString() << "'" << std::endl;
                     return;
                 }
-                std::cout << name.toStdString() << " = " << (value?"true":"false");
-
-                const Vector<String> &meaning = boolParam->valueMeaning();
-
-                if(meaning.size() == 2 && meaning[value].size())
-                    std::cout << " (" << meaning[value] << ")";
-
-                std::cout << std::endl;
 
                 index = _paramModel->index(row, 1, QModelIndex());
                 _paramModel->setData(index, QVariant(value));
@@ -99,7 +91,6 @@ void MainWindow::_refreshParameterWindow()
                     logger(LOG_ERROR) << "Failed to get parameter '" << name.toStdString() << "'" << std::endl;
                     return;
                 }
-                std::cout << name.toStdString() << " = " << std::dec << value  << " " << intParam->unit() << std::endl;
 
                 index = _paramModel->index(row, 1, QModelIndex());
                 _paramModel->setData(index, QVariant(value));
@@ -117,7 +108,6 @@ void MainWindow::_refreshParameterWindow()
                     logger(LOG_ERROR) << "Failed to get parameter '" << name.toStdString() << "'" << std::endl;
                     return;
                 }
-                std::cout << name.toStdString() << " = " << std::dec << value << " " << uintParam->unit() << std::endl;
 
                 index = _paramModel->index(row, 1, QModelIndex());
                 _paramModel->setData(index, QVariant(value));
@@ -133,7 +123,6 @@ void MainWindow::_refreshParameterWindow()
                     logger(LOG_ERROR) << "Failed to get parameter '" << name.toStdString() << "'" << std::endl;
                     return;
                 }
-                std::cout << name.toStdString() << " = " << std::dec << value << " " << floatParam->unit() << std::endl;
 
                 index = _paramModel->index(row, 1, QModelIndex());
                 _paramModel->setData(index, QVariant(value));
@@ -149,14 +138,6 @@ void MainWindow::_refreshParameterWindow()
                     logger(LOG_ERROR) << "Failed to get parameter '" << name.toStdString() << "'" << std::endl;
                     return;
                 }
-                std::cout << name.toStdString() << " = "  << std::dec << value;
-
-                const Vector<String> &meaning = enumParam->valueMeaning();
-
-                if(meaning.size() > value && meaning[value].size())
-                    std::cout << " (" << meaning[value] << ")";
-
-                std::cout << std::endl;
 
                 index = _paramModel->index(row, 1, QModelIndex());
                 _paramModel->setData(index, QVariant(value));

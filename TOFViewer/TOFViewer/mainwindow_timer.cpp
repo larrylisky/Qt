@@ -51,7 +51,6 @@ void MainWindow::slotTimeout()
 void MainWindow::slotVideoTimeout()
 {
     _mtxTimer.lock();
-  //  map< QString, Grabber* >::iterator itCamera;
 
     Grabber *grabber = _currGrabber;
     if (grabber != NULL)

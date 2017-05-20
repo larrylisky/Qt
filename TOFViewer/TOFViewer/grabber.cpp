@@ -296,8 +296,6 @@ bool Grabber::setProfile(Voxel::String name)
 
         if (p.second == name) 
         {
-            std::cout << "found" << std::endl;
-
             int profile_id = p.first;
             
             ConfigurationFile *c = 
@@ -305,12 +303,8 @@ bool Grabber::setProfile(Voxel::String name)
                 
             if (c && c->getLocation() == ConfigurationFile::IN_CAMERA) 
             {
-                std::cout << "setting" << std::endl;
-
                 if (_depthCamera->setCameraProfile(profile_id)) 
                 {
-                    std::cout << "set" << std::endl;
-
                     rc = true;
                     break;
                 }
@@ -335,9 +329,6 @@ bool Grabber::getSerialNumber(std::string &str)
     return _depthCamera->getSerialNumber(str);
 }
 
-
-
-//=======  Protected methods  ========
 
 
 /*!
