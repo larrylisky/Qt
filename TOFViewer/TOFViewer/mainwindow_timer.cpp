@@ -117,11 +117,13 @@ void MainWindow::slotVideoTimeout()
                     _ui->amplitudeGraphicsView->fitInView(item, Qt::KeepAspectRatio);
                     _ui->amplitudeGraphicsView->setScene(amp_scene);
                     _ui->amplitudeGraphicsView->show();
+
+
                 }
             }
         }
 
-        // Raw unprocessed data comes back at RawDataFrame
+        // Raw unprocessed data comes back as RawDataFrame
         if (flag & Grabber::FRAMEFLAG_RAW_UNPROCESSED )
         {
             Ptr<Frame> f = grabber->getRawFrameUnprocessed();
@@ -131,7 +133,6 @@ void MainWindow::slotVideoTimeout()
 
                 if (rawFrame)
                 {
-
                 }
             }
         }

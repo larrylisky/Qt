@@ -70,7 +70,8 @@ public slots:
     void slotSettingsDockWidgetVisChanged(bool checked);
 
     void slotTabBarClicked(int);
-    void slotParamChanged(QString text);
+    void slotParamSearchChanged(QString text);
+    void slotViewDataChanged(int row, int col);
 
 
 protected:   
@@ -91,8 +92,9 @@ protected:
 
     void _scanCamera();
     void _addMainToolBarButton(QString name);
-    uint _numConnectedCameras();
+    //uint _numConnectedCameras();
     bool _isIn(QString name, vector<QString> &vec);
+    void _updateParamModel(Grabber *grabber);
 
 
     template<typename MapT, typename KeyT, typename ValueT>
@@ -143,10 +145,6 @@ private:
     QTimer *_timer;
     QTimer *_videoTimer;
     QMutex _mtxTimer;
-
-    QStandardItemModel *_paramModel;
-
-
 };
 
 #endif // MAINWINDOW_H

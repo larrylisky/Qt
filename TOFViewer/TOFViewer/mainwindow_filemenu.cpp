@@ -157,7 +157,6 @@ void MainWindow::slotConnectCamera(QAction *action)
                         _currGrabber->start();
                         _videoTimer->start(15);
                         _refreshParameterWindow();
-
                         goto ret;
                     }
                     sleep(1);
