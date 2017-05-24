@@ -45,10 +45,15 @@ public:
     bool MatToQPixmap(cv::Mat &mat, QPixmap &pixMap );
 
 public slots:
-    void slotUpdateUnambDist(int value);
-    void slotUpdateFrameRate(int value);
-    void slotUpdateIntegDutyCycle(int value);
-    void slotUpdateIllumPwr(int value);
+    void slotSliderUnambDist(int value);
+    void slotSliderFrameRate(int value);
+    void slotSliderIntegDutyCycle(int value);
+    void slotSliderIllumPwr(int value);
+
+    void slotEditedUnambDist();
+    void slotEditedFrameRate();
+    void slotEditedIntegDutyCycle();
+    void slotEditedIllumPwr();
 
     void slotConnectCamera(QAction *action);
     void slotDisconnectCamera(QAction *action);
@@ -85,9 +90,11 @@ protected:
     void _setupDockWidgets();
     void _setupParameterWindow();
 
+
     void _refreshCameraMenu();
     void _refreshProfileMenu();
     void _refreshParameterWindow();
+    void _refreshSliders();
 
 
     void _scanCamera();
@@ -95,6 +102,7 @@ protected:
     //uint _numConnectedCameras();
     bool _isIn(QString name, vector<QString> &vec);
     void _updateParamModel(Grabber *grabber);
+    void _setCurrGrabber(Grabber *grabber);
 
 
     template<typename MapT, typename KeyT, typename ValueT>
@@ -141,6 +149,9 @@ private:
     std::map< QString, Grabber* > _connected;
     std::map< QString, QAction* > _cameraSelectAction;
     Grabber * _currGrabber;
+
+    QGraphicsScene _phase_scene;
+    QGraphicsScene _amp_scene;
 
     QTimer *_timer;
     QTimer *_videoTimer;

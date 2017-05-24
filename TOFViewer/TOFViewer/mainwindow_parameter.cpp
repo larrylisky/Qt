@@ -103,7 +103,7 @@ void MainWindow::_refreshParameterWindow()
                     item->setData(Qt::EditRole, QVariant(value));
                     _ui->tableWidget->setItem(rows, COLUMN_VALUE, item);
 
-                    item = new QTableWidgetItem(QString(""));
+                    item = new QTableWidgetItem(QString("bool"));
                     item->setFlags(item->flags() & ~Qt::ItemIsEditable); // non editable
                     _ui->tableWidget->setItem(rows, COLUMN_UNIT, item);
                 }
@@ -123,7 +123,9 @@ void MainWindow::_refreshParameterWindow()
                     item->setData(Qt::EditRole, QVariant(value));
                     _ui->tableWidget->setItem(rows, COLUMN_VALUE, item);
 
-                    item = new QTableWidgetItem(QString(intParam->unit().c_str()));
+                  //  item = new QTableWidgetItem(QString(intParam->unit().c_str()));
+                    item = new QTableWidgetItem(QString("int"));
+
                     item->setFlags(item->flags() & ~Qt::ItemIsEditable); // non editable
                     _ui->tableWidget->setItem(rows, COLUMN_UNIT, item);
 
@@ -144,7 +146,8 @@ void MainWindow::_refreshParameterWindow()
                     item->setData(Qt::EditRole, QVariant(value));
                     _ui->tableWidget->setItem(rows, COLUMN_VALUE, item);
 
-                    item = new QTableWidgetItem(QString(uintParam->unit().c_str()));
+                   // item = new QTableWidgetItem(QString(uintParam->unit().c_str()));
+                    item = new QTableWidgetItem(QString("uint"));
                     item->setFlags(item->flags() & ~Qt::ItemIsEditable); // non editable
                     _ui->tableWidget->setItem(rows, COLUMN_UNIT, item);
 
@@ -165,7 +168,8 @@ void MainWindow::_refreshParameterWindow()
                     item->setData(Qt::EditRole, QVariant(value));
                     _ui->tableWidget->setItem(rows, COLUMN_VALUE, item);
 
-                    item = new QTableWidgetItem(QString(floatParam->unit().c_str()));
+//                    item = new QTableWidgetItem(QString(floatParam->unit().c_str()));                    item = new QTableWidgetItem(QString("enum"));
+                    item = new QTableWidgetItem(QString("float"));
                     item->setFlags(item->flags() & ~Qt::ItemIsEditable); // non editable
                     _ui->tableWidget->setItem(rows, COLUMN_UNIT, item);
 
@@ -216,7 +220,7 @@ void MainWindow::slotTabBarClicked(int tab)
 {
     if (tab == TAB_SLIDER)
     {
-
+        _refreshSliders();
     }
     else if (tab == TAB_PARAM)
     {

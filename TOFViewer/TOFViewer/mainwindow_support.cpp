@@ -73,8 +73,25 @@ void MainWindow::_scanCamera()
     {
         if (_connected.size() > 0)
         {
-            _currGrabber = _connected.begin()->second;
-            _refreshParameterWindow();
+            _setCurrGrabber(_connected.begin()->second);
         }
     }
+}
+
+
+/*!
+ *=============================================================================
+ *
+ * \brief MainWindow::_setCurrGrabber
+ * \param grabber
+ *
+ *=============================================================================
+ */
+void MainWindow::_setCurrGrabber(Grabber *grabber)
+{
+    _currGrabber = grabber;
+    _refreshSliders();
+    _refreshParameterWindow();
+    _currGrabber->setProfile(_currGrabber->getCurrentProfileName());
+    _refreshProfileMenu();
 }

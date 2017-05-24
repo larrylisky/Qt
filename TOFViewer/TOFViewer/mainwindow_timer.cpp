@@ -18,12 +18,14 @@
  */
 void MainWindow::_setupTimer()
 {
+
     _timer = new QTimer(this);
     connect(_timer, SIGNAL(timeout()), this, SLOT(slotTimeout()));
     _timer->start(1000);
 
     _videoTimer = new QTimer(this);
     connect(_videoTimer, SIGNAL(timeout()), this, SLOT(slotVideoTimeout()));
+
 }
 
 
@@ -104,21 +106,20 @@ void MainWindow::slotVideoTimeout()
                     phaseMat.convertTo(grayMat, CV_8UC1, 255.0);
                     cv::applyColorMap(grayMat, colorMat, cv::COLORMAP_HSV);
                     MatToQPixmap(colorMat, phase_image);
-                    QGraphicsScene* phase_scene = new QGraphicsScene();
-                    QGraphicsPixmapItem *item = phase_scene->addPixmap(phase_image);
+                    _phase_scene.clear();
+                    QGraphicsPixmapItem *item = _phase_scene.addPixmap(phase_image);
                     _ui->phaseGraphicsView->fitInView(item, Qt::KeepAspectRatio);
-                    _ui->phaseGraphicsView->setScene(phase_scene);
+                    _ui->phaseGraphicsView->setScene(&_phase_scene);
+
                     _ui->phaseGraphicsView->show();
 
                     ampMat = ampMat * 10;
                     MatToQPixmap(ampMat, amp_image);
-                    QGraphicsScene* amp_scene = new QGraphicsScene();
-                    item = amp_scene->addPixmap(amp_image);
+                    _amp_scene.clear();
+                    item = _amp_scene.addPixmap(amp_image);
                     _ui->amplitudeGraphicsView->fitInView(item, Qt::KeepAspectRatio);
-                    _ui->amplitudeGraphicsView->setScene(amp_scene);
+                    _ui->amplitudeGraphicsView->setScene(&_amp_scene);
                     _ui->amplitudeGraphicsView->show();
-
-
                 }
             }
         }

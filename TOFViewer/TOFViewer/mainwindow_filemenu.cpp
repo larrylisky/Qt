@@ -149,14 +149,13 @@ void MainWindow::slotConnectCamera(QAction *action)
                 Grabber *grabber = new Grabber(dc, Grabber::FRAMEFLAG_ALL, _sys);
                 _connected[name] = grabber;
                 std::cout << "Connected to " << name.toStdString() << std::endl;
-                _currGrabber = _connected[name];
                 for (int i=0; i < 5; i++)
                 {
-                    if (_currGrabber->isInitialized() && !_currGrabber->isRunning())
+                    if (grabber->isInitialized() && !grabber->isRunning())
                     {
-                        _currGrabber->start();
+                        grabber->start();
+                        _setCurrGrabber(grabber);
                         _videoTimer->start(15);
-                        _refreshParameterWindow();
                         goto ret;
                     }
                     sleep(1);
