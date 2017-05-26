@@ -24,7 +24,7 @@ public:
     ToFOpenGLWidget(QWidget *parent);
     ~ToFOpenGLWidget();
 
-    void drawPointCloud(XYZIPointCloudFrame *frame);
+    void drawPointCloud(XYZIPointCloudFrame *frame, float gain, float zMin, float zMax);
 
 protected:
     virtual void initializeGL();
@@ -46,6 +46,8 @@ private:
     QPoint _startPos, _endPos;
     float _rotX, _rotY;
     float _arrowSize, _axisLength;
+    float _gain;
+    float _zMin, _zMax;
 };
 
 #endif // TOFOPENGLWIDGET_H

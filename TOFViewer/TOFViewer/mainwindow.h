@@ -22,6 +22,8 @@
 #include "opencv2/opencv.hpp"
 #include "grabber.h"
 
+#define MAX_ZDEPTH      20000   // 20m
+
 namespace Ui {
 class MainWindow;
 }
@@ -80,6 +82,9 @@ public slots:
 
     void slotPhaseGainSliderMoved(int value);
     void slotAmpGainSliderMoved(int value);
+
+    void slotLowerLimitSliderMoved(int value);
+    void slotUpperLimitSliderMoved(int value);
 
 protected:   
     void _setupMenu();
@@ -161,6 +166,8 @@ private:
 
     int _phaseGain;
     float _ampGain;
+
+    int _zLowerLimit, _zUpperLimit;
 };
 
 #endif // MAINWINDOW_H

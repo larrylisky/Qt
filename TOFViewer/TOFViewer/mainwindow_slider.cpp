@@ -17,23 +17,40 @@
  */
 void MainWindow::_setupSliders()
 {
+    // Parameter slider edit field
     connect(_ui->unambDistEdit, SIGNAL(returnPressed()), this, SLOT(slotEditedUnambDist()));
     connect(_ui->frameRateEdit, SIGNAL(returnPressed()), this, SLOT(slotEditedFrameRate()));
     connect(_ui->integDutyCycleEdit, SIGNAL(returnPressed()), this, SLOT(slotEditedIntegDutyCycle()));
     connect(_ui->illumPwrEdit, SIGNAL(returnPressed()), this, SLOT(slotEditedIllumPwr()));
 
+    // Parameter sliders
     connect(_ui->unambDistSlider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderUnambDist(int)));
     connect(_ui->frameRateSlider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderFrameRate(int)));
     connect(_ui->integDutyCycleSlider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderIntegDutyCycle(int)));
     connect(_ui->illumPwrSlider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderIllumPwr(int)));
 
-    _ui->phaseRange->setMinimum(1);
-    _ui->phaseRange->setMaximum(1000);
-    connect(_ui->phaseRange, SIGNAL(sliderMoved(int)), this, SLOT(slotPhaseGainSliderMoved(int)));
+    // Image gain sliders
+    _ui->phaseRangeSlider->setMinimum(1);
+    _ui->phaseRangeSlider->setMaximum(1000);
+    connect(_ui->phaseRangeSlider, SIGNAL(sliderMoved(int)), this, SLOT(slotPhaseGainSliderMoved(int)));
 
-    _ui->ampRange->setMinimum(1);
-    _ui->ampRange->setMaximum(2000);
-    connect(_ui->ampRange, SIGNAL(sliderMoved(int)), this, SLOT(slotAmpGainSliderMoved(int)));
+    _ui->ampRangeSlider->setMinimum(1);
+    _ui->ampRangeSlider->setMaximum(4000);
+    connect(_ui->ampRangeSlider, SIGNAL(sliderMoved(int)), this, SLOT(slotAmpGainSliderMoved(int)));
+
+    // zDepth limit sliders
+    _ui->zLowerLimitSlider->setMinimum(0);
+    _ui->zLowerLimitSlider->setMaximum(MAX_ZDEPTH);
+    _ui->zLowerLimitSlider->setValue(0);
+    _ui->zLowerLimitSlider->update();
+    connect(_ui->zLowerLimitSlider, SIGNAL(sliderMoved(int)), this, SLOT(slotLowerLimitSliderMoved(int)));
+
+    _ui->zUpperLimitSlider->setMinimum(0);
+    _ui->zUpperLimitSlider->setMaximum(MAX_ZDEPTH);
+    _ui->zUpperLimitSlider->setValue(MAX_ZDEPTH);
+    _ui->zUpperLimitSlider->update();
+    connect(_ui->zUpperLimitSlider, SIGNAL(sliderMoved(int)), this, SLOT(slotUpperLimitSliderMoved(int)));
+
 }
 
 
@@ -95,6 +112,8 @@ void MainWindow::_refreshSliders()
         _ui->frameRateEdit->setText(QString(std::to_string(value).c_str()));
         _ui->frameRateSlider->setValue(value);
         _ui->frameRateSlider->update();
+
+
     }
 }
 
@@ -377,3 +396,70 @@ void MainWindow::slotEditedIllumPwr()
     std::cout << "IllumPwrEdit pressed (" << ok << ")" << std::endl;
 }
 
+
+/*!
+ *=============================================================================
+ *
+ * \brief MainWindow::slotPhaseGainSliderMoved
+ * \param value
+ *
+ *=============================================================================
+ */
+void MainWindow::slotPhaseGainSliderMoved(int value)
+{
+    _phaseGain = value;
+}
+
+
+/*!
+ *=============================================================================
+ *
+ * \brief MainWindow::slotAmpGainSliderMoved
+ * \param value
+ *
+ *=============================================================================
+ */
+void MainWindow::slotAmpGainSliderMoved(int value)
+{
+    _ampGain = (float)value/10.0;
+}
+
+
+/*!
+ *=============================================================================
+ *
+ * \brief MainWindow::slotLowerLimitSliderMoved
+ * \param value
+ *
+ *=============================================================================
+ */
+void MainWindow::slotLowerLimitSliderMoved(int value)
+{
+    _zLowerLimit = value;
+    if (_zLowerLimit > _zUpperLimit)
+    {
+        _zUpperLimit = _zLowerLimit;
+        _ui->zUpperLimitSlider->setValue(_zUpperLimit);
+        _ui->zUpperLimitSlider->update();
+    }
+}
+
+
+/*!
+ *=============================================================================
+ *
+ * \brief MainWindow::slotUpperLimitSliderMoved
+ * \param value
+ *
+ *=============================================================================
+ */
+void MainWindow::slotUpperLimitSliderMoved(int value)
+{
+    _zUpperLimit = value;
+    if (_zUpperLimit < _zLowerLimit)
+    {
+        _zLowerLimit = _zUpperLimit;
+        _ui->zLowerLimitSlider->setValue(_zLowerLimit);
+        _ui->zLowerLimitSlider->update();
+    }
+}

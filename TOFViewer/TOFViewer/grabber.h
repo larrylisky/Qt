@@ -56,7 +56,12 @@ protected:
     int _rows, _cols;
     
     std::function<void(Grabber *g)> _update;
-    
+
+    std::vector<FilterPtr> _RawUnprocessedFilters;
+    std::vector<FilterPtr> _RawProcessedFilters;
+    std::vector<FilterPtr> _DepthFilters;
+
+protected:
     void _callback(DepthCamera &depthCamera, const Frame &frame, 
             DepthCamera::FrameType type);
 
@@ -73,6 +78,29 @@ public:
     	else
       	    return r.getFrameRate();
   	}
+
+    virtual int addFilter(FilterPtr p, DepthCamera::FrameType frameType, int beforeId=-1)
+            { return _depthCamera->addFilter(p, frameType, beforeId); }
+
+    virtual FilterPtr getFilter(int filterId, DepthCamera::FrameType frameType) const
+            { return _depthCamera->getFilter(filterId, frameType); }
+
+    virtual bool removeFilter(int filterId, DepthCamera::FrameType frameType)
+            { return _depthCamera->removeFilter(filterId, frameType); }
+
+    virtual bool removeAllFilters(DepthCamera::FrameType frameType)
+            { return _depthCamera->removeAllFilters(frameType); }
+
+    virtual void resetFilters() { _depthCamera->resetFilters(); }
+
+    virtual const FilterSet<RawFrame> &getUnprocessedRawFilterSet()
+            { return _depthCamera->getUnprocessedRawFilterSet(); }
+
+    virtual const FilterSet<RawFrame> &getProcessedRawFilterSet()
+            { return _depthCamera->getProcessedRawFilterSet(); }
+
+    virtual const FilterSet<DepthFrame> &getDepthFilterSet()
+            { return _depthCamera->getDepthFilterSet(); }
 
     virtual DepthCameraPtr getDepthCamera() { return _depthCamera; }
 

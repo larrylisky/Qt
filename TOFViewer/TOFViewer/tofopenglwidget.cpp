@@ -23,6 +23,9 @@ ToFOpenGLWidget::ToFOpenGLWidget(QWidget *parent)
     _rotX = _rotY = 0.0;
     _arrowSize = 0.25;
     _axisLength = 5.0;
+    _gain = 1.0;
+    _zMin = 0;
+    _zMax = FLT_MAX;
 }
 
 
@@ -108,14 +111,18 @@ void ToFOpenGLWidget::paintGL()
     glPopMatrix();
 
     glBegin(GL_POINTS);
-        glColor3f(1.0, 1.0, 1.0);
         glPointSize(2);
         for (int i=0; i < _frame.size(); i++)
         {
-            float x = -_frame.points[i].x;
-            float y = -_frame.points[i].y;
             float z = _frame.points[i].z;
-            glVertex3f(x, y, z);
+            if (z >= _zMin && z <= _zMax)
+            {
+                float amp = _frame.points[i].i * _gain;
+                float x = -_frame.points[i].x;
+                float y = -_frame.points[i].y;
+                glColor3f(amp, amp, amp);
+                glVertex3f(x, y, z);
+            }
         }
     glEnd();
 
@@ -133,10 +140,16 @@ void ToFOpenGLWidget::paintGL()
  *
  *=============================================================================
  */
-void ToFOpenGLWidget::drawPointCloud(XYZIPointCloudFrame *frame)
+void ToFOpenGLWidget::drawPointCloud(XYZIPointCloudFrame *frame,
+                                     float gain, float zMin, float zMax)
 {
     if (frame)
+    {
         _frame = *frame;
+        _gain = gain;
+        _zMin = zMin;
+        _zMax = zMax;
+    }
 
     paintGL();
     update();

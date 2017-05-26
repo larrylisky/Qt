@@ -25,6 +25,9 @@ MainWindow::MainWindow(QWidget *parent) :
     _ampGain = 1.0;
     _phaseGain = 1.0;
 
+    _zLowerLimit = 0;
+    _zUpperLimit = MAX_ZDEPTH;
+
     _currGrabber = NULL;
 
     _setupFileMenu();
@@ -37,6 +40,7 @@ MainWindow::MainWindow(QWidget *parent) :
     _setupDockWidgets();
     _setupParameterWindow();
 
+    std::cout << "_ui is " << this << std::endl;
 }
 
 
