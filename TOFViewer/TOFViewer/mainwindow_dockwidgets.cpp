@@ -20,6 +20,8 @@ void MainWindow::_setupDockWidgets()
     connect(_ui->infoDockWidget, SIGNAL(visibilityChanged(bool)) , this, SLOT(slotInfoDockWidgetVisChanged(bool)));
     connect(_ui->imageDockWidget, SIGNAL(visibilityChanged(bool)) , this, SLOT(slotImageDockWidgetVisChanged(bool)));
     connect(_ui->settingsDockWidget, SIGNAL(visibilityChanged(bool)) , this, SLOT(slotSettingsDockWidgetVisChanged(bool)));
+
+
 }
 
 

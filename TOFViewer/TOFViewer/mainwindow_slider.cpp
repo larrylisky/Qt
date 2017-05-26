@@ -26,6 +26,14 @@ void MainWindow::_setupSliders()
     connect(_ui->frameRateSlider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderFrameRate(int)));
     connect(_ui->integDutyCycleSlider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderIntegDutyCycle(int)));
     connect(_ui->illumPwrSlider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderIllumPwr(int)));
+
+    _ui->phaseRange->setMinimum(1);
+    _ui->phaseRange->setMaximum(1000);
+    connect(_ui->phaseRange, SIGNAL(sliderMoved(int)), this, SLOT(slotPhaseGainSliderMoved(int)));
+
+    _ui->ampRange->setMinimum(1);
+    _ui->ampRange->setMaximum(2000);
+    connect(_ui->ampRange, SIGNAL(sliderMoved(int)), this, SLOT(slotAmpGainSliderMoved(int)));
 }
 
 

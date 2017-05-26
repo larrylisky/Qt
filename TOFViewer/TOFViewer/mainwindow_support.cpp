@@ -95,3 +95,31 @@ void MainWindow::_setCurrGrabber(Grabber *grabber)
     _currGrabber->setProfile(_currGrabber->getCurrentProfileName());
     _refreshProfileMenu();
 }
+
+
+/*!
+ *=============================================================================
+ *
+ * \brief MainWindow::slotPhaseGainSliderMoved
+ * \param value
+ *
+ *=============================================================================
+ */
+void MainWindow::slotPhaseGainSliderMoved(int value)
+{
+    _phaseGain = value;
+}
+
+
+/*!
+ *=============================================================================
+ *
+ * \brief MainWindow::slotAmpGainSliderMoved
+ * \param value
+ *
+ *=============================================================================
+ */
+void MainWindow::slotAmpGainSliderMoved(int value)
+{
+    _ampGain = (float)value/10.0;
+}

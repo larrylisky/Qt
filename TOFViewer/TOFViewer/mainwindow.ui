@@ -436,6 +436,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QSlider" name="phaseRange">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QLabel" name="amplitudeLabel">
          <property name="text">
           <string>Amplitude</string>
@@ -444,6 +451,13 @@
        </item>
        <item>
         <widget class="QGraphicsView" name="amplitudeGraphicsView"/>
+       </item>
+       <item>
+        <widget class="QSlider" name="ampRange">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>

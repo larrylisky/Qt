@@ -78,6 +78,8 @@ public slots:
     void slotParamSearchChanged(QString text);
     void slotViewDataChanged(int row, int col);
 
+    void slotPhaseGainSliderMoved(int value);
+    void slotAmpGainSliderMoved(int value);
 
 protected:   
     void _setupMenu();
@@ -156,6 +158,9 @@ private:
     QTimer *_timer;
     QTimer *_videoTimer;
     QMutex _mtxTimer;
+
+    int _phaseGain;
+    float _ampGain;
 };
 
 #endif // MAINWINDOW_H

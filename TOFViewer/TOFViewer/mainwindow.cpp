@@ -22,6 +22,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     _ui->setupUi(this);
 
+    _ampGain = 1.0;
+    _phaseGain = 1.0;
+
     _currGrabber = NULL;
 
     _setupFileMenu();

@@ -104,7 +104,8 @@ void MainWindow::slotVideoTimeout()
 
                     cv::Mat colorMat, grayMat;
                     phaseMat.convertTo(grayMat, CV_8UC1, 255.0);
-                    cv::applyColorMap(grayMat, colorMat, cv::COLORMAP_HSV);
+                    grayMat = grayMat * _phaseGain / 200;
+                    cv::applyColorMap(grayMat, colorMat, cv::COLORMAP_JET);
                     MatToQPixmap(colorMat, phase_image);
                     _phase_scene.clear();
                     QGraphicsPixmapItem *item = _phase_scene.addPixmap(phase_image);
@@ -113,7 +114,7 @@ void MainWindow::slotVideoTimeout()
 
                     _ui->phaseGraphicsView->show();
 
-                    ampMat = ampMat * 10;
+                    ampMat = ampMat * _ampGain;
                     MatToQPixmap(ampMat, amp_image);
                     _amp_scene.clear();
                     item = _amp_scene.addPixmap(amp_image);
