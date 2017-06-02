@@ -26,7 +26,6 @@ INCLUDEPATH     += . $$VOXEL_INC $$OPENCV_INC $$PCL_INC
 
 SOURCES         += main.cpp\
                     mainwindow.cpp \
-    imageFuncs.cpp \
     tofopenglwidget.cpp \
     mainwindow_support.cpp \
     mainwindow_filemenu.cpp \
@@ -37,11 +36,14 @@ SOURCES         += main.cpp\
     mainwindow_windowsmenu.cpp \
     mainwindow_dockwidgets.cpp \
     grabber.cpp \
-    mainwindow_parameter.cpp
+    mainwindow_parameter.cpp \
+    mainwindow_dataflow.cpp \
+    dataflowgraphicsview.cpp
 
 HEADERS         += mainwindow.h \
     tofopenglwidget.h \
-    grabber.h
+    grabber.h \
+    dataflowgraphicsview.h
 
 QMAKE_CXXFLAGS  += -pthread -std=c++11 -fPIC -ffast-math -fpermissive
 

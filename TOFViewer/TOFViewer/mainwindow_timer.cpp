@@ -96,7 +96,7 @@ void MainWindow::slotVideoTimeout()
 
                     cv::Mat phaseMat = cv::Mat::zeros(rows,cols, CV_32FC1);
                     cv::Mat ampMat = cv::Mat::zeros(rows, cols, CV_32FC1);
-                    QPixmap phase_image, amp_image;
+                    QPixmap phaseImage, ampImage;
 
                     int w = _ui->phaseGraphicsView->geometry().width();
                     int h = _ui->phaseGraphicsView->geometry().height();
@@ -107,20 +107,20 @@ void MainWindow::slotVideoTimeout()
                     phaseMat.convertTo(grayMat, CV_8UC1, 255.0);
                     grayMat = grayMat * _phaseGain / 200;
                     cv::applyColorMap(grayMat, colorMat, cv::COLORMAP_JET);
-                    MatToQPixmap(colorMat, phase_image);
-                    _phase_scene.clear();
-                    QGraphicsPixmapItem *item = _phase_scene.addPixmap(phase_image);
+                    MatToQPixmap(colorMat, phaseImage);
+                    _phaseScene.clear();
+                    QGraphicsPixmapItem *item = _phaseScene.addPixmap(phaseImage);
                     _ui->phaseGraphicsView->fitInView(item, Qt::KeepAspectRatio);
-                    _ui->phaseGraphicsView->setScene(&_phase_scene);
+                    _ui->phaseGraphicsView->setScene(&_phaseScene);
 
                     _ui->phaseGraphicsView->show();
 
                     ampMat = ampMat * _ampGain;
-                    MatToQPixmap(ampMat, amp_image);
-                    _amp_scene.clear();
-                    item = _amp_scene.addPixmap(amp_image);
+                    MatToQPixmap(ampMat, ampImage);
+                    _ampScene.clear();
+                    item = _ampScene.addPixmap(ampImage);
                     _ui->amplitudeGraphicsView->fitInView(item, Qt::KeepAspectRatio);
-                    _ui->amplitudeGraphicsView->setScene(&_amp_scene);
+                    _ui->amplitudeGraphicsView->setScene(&_ampScene);
                     _ui->amplitudeGraphicsView->show();
                 }
             }

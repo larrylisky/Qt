@@ -39,8 +39,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     _setupDockWidgets();
     _setupParameterWindow();
+    _setupInfoDockWidget();
+    _setupDataFlowWindow();
 
-    std::cout << "_ui is " << this << std::endl;
 }
 
 

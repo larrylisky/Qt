@@ -1,7 +1,7 @@
 /*
  * TI Voxel Lib component.
  *
- * Copyright (c) 2014 Texas Instruments Inc.
+ * Copyright (c) 2017 Texas Instruments Inc.
  */
 
 #ifndef GRABBER_H

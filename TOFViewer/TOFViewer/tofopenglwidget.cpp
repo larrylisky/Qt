@@ -1,7 +1,7 @@
 /*
- * TI Voxel Lib component.
+ * TOF Viewer component.
  *
- * Copyright (c) 2014 Texas Instruments Inc.
+ * Copyright (c) 2017 Texas Instruments Inc.
  */
 
 #include "tofopenglwidget.h"
@@ -51,16 +51,19 @@ ToFOpenGLWidget::~ToFOpenGLWidget()
  */
 void ToFOpenGLWidget::initializeGL()
 {
-    GLfloat light0_position[] = { 20.0, 20.0, -20.0, 0.0 };
-    GLfloat light1_position[] = { -20.0, 20.0, -20.0, 0.0 };
+    GLfloat light0_position[] = { 40.0, 40.0, -40.0, 0.0 };
+    GLfloat light1_position[] = { -40.0, 40.0, -40.0, 0.0 };
+    GLfloat light2_position[] = { 0.0, 0.0,  40.0, 0.0 };
 
     glClearColor(0,0,0,1);
     glEnable(GL_DEPTH_TEST);
     glLightfv(GL_LIGHT0, GL_POSITION, light0_position);
-    glLightfv(GL_LIGHT0, GL_POSITION, light1_position);
+    glLightfv(GL_LIGHT1, GL_POSITION, light1_position);
+    glLightfv(GL_LIGHT2, GL_POSITION, light2_position);
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glEnable(GL_LIGHT1);
+    glEnable(GL_LIGHT2);
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
     glEnable(GL_COLOR_MATERIAL);
 }

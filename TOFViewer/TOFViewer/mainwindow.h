@@ -24,6 +24,16 @@
 
 #define MAX_ZDEPTH      20000   // 20m
 
+#define INFO_DATAFLOW_TAB   0
+#define INFO_WATCH_TAB      1
+#define INFO_RECORD_TAB     2
+#define INFO_LOG_TAB        3
+
+#define INFO_BOX_WIDTH      50
+#define INFO_BOX_HEIGHT     30
+#define INFO_LINE_WIDTH     20
+#define INFO_ARROW_SIZE     5
+
 namespace Ui {
 class MainWindow;
 }
@@ -45,6 +55,7 @@ public:
     bool MatToQImage(cv::Mat &mat, QImage &image);
 
     bool MatToQPixmap(cv::Mat &mat, QPixmap &pixMap );
+
 
 public slots:
     void slotSliderUnambDist(int value);
@@ -86,6 +97,9 @@ public slots:
     void slotLowerLimitSliderMoved(int value);
     void slotUpperLimitSliderMoved(int value);
 
+    void slotInfoTabBarClicked(int tab);
+    void slotSizeChangedUpdate(QSize s);
+
 protected:   
     void _setupMenu();
     void _setupFileMenu();
@@ -96,20 +110,39 @@ protected:
     void _setupTimer();
     void _setupDockWidgets();
     void _setupParameterWindow();
-
+    void _setupInfoDockWidget();
+    void _setupDataFlowWindow();
 
     void _refreshCameraMenu();
     void _refreshProfileMenu();
     void _refreshParameterWindow();
     void _refreshSliders();
-
+    void _refreshDataFlowWindow();
 
     void _scanCamera();
     void _addMainToolBarButton(QString name);
-    //uint _numConnectedCameras();
     bool _isIn(QString name, vector<QString> &vec);
     void _updateParamModel(Grabber *grabber);
     void _setCurrGrabber(Grabber *grabber);
+    QPoint _drawBox(QGraphicsScene &scene, QString label, QPoint &org, int w, int h);
+    QPoint _drawArrow(QGraphicsScene &scene, QPoint &org, int length);
+
+    template<typename T>
+    QPoint _drawFilterChain(QGraphicsScene &scene, const FilterSet<T> &set,
+                            QString name, QPoint org,
+                            int boxWidth, int boxHeight, int lineLength)
+    {
+        QPoint p = _drawBox(scene, name, org, boxWidth, boxHeight);
+
+        for (auto i = 0; i < set.size(); i++)
+        {
+            QString name = QString(set.getFilter(i).get()->name().c_str());
+            p = _drawArrow(scene, p, lineLength);
+            p = _drawBox(scene, name, p, boxWidth, boxHeight);
+        }
+
+        return p;
+    }
 
 
     template<typename MapT, typename KeyT, typename ValueT>
@@ -157,8 +190,9 @@ private:
     std::map< QString, QAction* > _cameraSelectAction;
     Grabber * _currGrabber;
 
-    QGraphicsScene _phase_scene;
-    QGraphicsScene _amp_scene;
+    QGraphicsScene _phaseScene;
+    QGraphicsScene _ampScene;
+    QGraphicsScene _dataflowScene;
 
     QTimer *_timer;
     QTimer *_videoTimer;

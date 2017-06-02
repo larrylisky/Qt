@@ -35,7 +35,7 @@ void MainWindow::_setupSliders()
     connect(_ui->phaseRangeSlider, SIGNAL(sliderMoved(int)), this, SLOT(slotPhaseGainSliderMoved(int)));
 
     _ui->ampRangeSlider->setMinimum(1);
-    _ui->ampRangeSlider->setMaximum(4000);
+    _ui->ampRangeSlider->setMaximum(2048);
     connect(_ui->ampRangeSlider, SIGNAL(sliderMoved(int)), this, SLOT(slotAmpGainSliderMoved(int)));
 
     // zDepth limit sliders
